@@ -14,10 +14,6 @@ class LinRegression:
         return self.sklearn_f(X, y)
 
     def regression_f(self, predictors, outcome):
-        # scaler = StandardScaler()
-        # scaler.fit(predictors)
-        # predictors_std = scaler.transform(predictors)
-        # print(outcome.shape)
         outcome = np.array(outcome).reshape(-1)
         mod = pg.linear_regression(predictors, outcome, relimp=True)
         Y = outcome
