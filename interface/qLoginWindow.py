@@ -1,6 +1,10 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QMainWindow, QGridLayout, QLayout, QLabel, QWidget, QLineEdit, QPushButton
+from PyQt6.QtWidgets import QMainWindow, QGridLayout, QLayout, QLabel, QWidget, QLineEdit, QPushButton, QApplication, \
+    QMessageBox
 
+from database import admin_bd
+
+import qResearcherWindow, qMathOperatorWindow
 
 class LoginWindow(QMainWindow):
     def __init__(self):
@@ -11,6 +15,7 @@ class LoginWindow(QMainWindow):
         main_widget = QWidget()
         main_widget.setLayout(layout)
         self.setCentralWidget(main_widget)
+        self.resize(300, 150)
 
     def _get_layout(self) -> QLayout:
         layout = QGridLayout()
@@ -44,4 +49,32 @@ class LoginWindow(QMainWindow):
         self.ok_button.setEnabled(bool(string))
 
     def _ok_clicked(self) -> None:
-        pass
+        login = self.input_login.text()
+        password = self.input_password.text()
+        database_worker = admin_bd.DataBaseWorker()
+        id_user_type = database_worker.check_user(login, password)
+
+        if not id_user_type:
+            QMessageBox.critical(self, "Ошибка", "Неверный логин или пароль")
+            return
+
+        id_user_type = id_user_type[0][0]
+
+        match id_user_type:
+            case 1:
+                self.main_window = qResearcherWindow.ResearcherWindow()
+                self.main_window.show()
+                self.close()
+            case 2:
+                self.main_window = qMathOperatorWindow.MathOperatorWindow()
+                self.main_window.show()
+                self.close()
+
+
+if __name__ == "__main__":
+    import sys
+
+    app = QApplication(sys.argv)
+    window = LoginWindow()
+    window.show()
+    sys.exit(app.exec())
