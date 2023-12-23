@@ -6,6 +6,7 @@ from database import admin_bd
 
 import qResearcherWindow, qMathOperatorWindow
 
+
 class LoginWindow(QMainWindow):
     def __init__(self):
         super().__init__()
