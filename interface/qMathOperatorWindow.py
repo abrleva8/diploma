@@ -22,7 +22,7 @@ class MathOperatorWindow(QMainWindow):
 
         self._center()
 
-        self.math_operator_worker = admin_bd.DataBaseWorker()
+        self.math_operator_worker = admin_bd.UserDataBaseWorker()
         self._init_methods_combo_box()
 
     def _init_methods_combo_box(self):

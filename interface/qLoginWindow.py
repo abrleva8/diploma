@@ -52,7 +52,7 @@ class LoginWindow(QMainWindow):
     def _ok_clicked(self) -> None:
         login = self.input_login.text()
         password = self.input_password.text()
-        database_worker = admin_bd.DataBaseWorker()
+        database_worker = admin_bd.UserDataBaseWorker()
         id_user_type = database_worker.check_user(login, password)
 
         if not id_user_type:

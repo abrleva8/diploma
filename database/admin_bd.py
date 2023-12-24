@@ -1,9 +1,9 @@
 import sqlite3
 
 
-class DataBaseWorker:
+class UserDataBaseWorker:
     def __init__(self):
-        self.conn = sqlite3.connect('../data/data_base.db')
+        self.conn = sqlite3.connect('../data/users.db')
         self.cur = self.conn.cursor()
 
     def __del__(self):

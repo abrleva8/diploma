@@ -19,7 +19,7 @@ class AddWindow(QMainWindow):
 
         self._center()
 
-        self.math_operator_worker = admin_bd.DataBaseWorker()
+        self.math_operator_worker = admin_bd.UserDataBaseWorker()
         self._init_type_combobox()
 
     def _get_layout(self):
