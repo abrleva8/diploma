@@ -2,7 +2,7 @@ from PyQt6.QtCore import Qt, QStringListModel
 from PyQt6.QtWidgets import QWidget, QGridLayout, QLabel, QComboBox, QPushButton, QMessageBox
 
 from database import material_bd
-from interface import qAddMaterialWindow
+from interface import qAddMaterialWindow, qAddPropertyWindow, qAddConditionWindow
 
 
 class MaterialWidget(QWidget):
@@ -49,19 +49,18 @@ class MaterialWidget(QWidget):
         self.property_combo_box = QComboBox(self)
         self.property_cb_model = QStringListModel()
         self.property_combo_box.setModel(self.property_cb_model)
-        # self.material_combo_box.currentTextChanged.connect(self._users_combo_box_changed)
+        self.property_combo_box.currentTextChanged.connect(self.__property_combo_box_changed)
         layout.addWidget(self.property_combo_box, 3, 0)
 
         self.add_property_button = QPushButton(self)
         self.add_property_button.setText("Добавить свойство")
-        self.add_property_button.setEnabled(False)
-        # self.delete_button.clicked.connect(self._delete_button_clicked)
+        self.add_property_button.clicked.connect(self.__add_property_button_clicked)
         layout.addWidget(self.add_property_button, 3, 1)
 
         self.delete_property_button = QPushButton(self)
         self.delete_property_button.setText("Удалить свойство")
         self.delete_property_button.setEnabled(False)
-        # self.delete_button.clicked.connect(self._delete_button_clicked)
+        self.delete_property_button.clicked.connect(self.__delete_property_button_clicked)
         layout.addWidget(self.delete_property_button, 3, 2)
 
         self.condition_label = QLabel("Условия")
@@ -70,19 +69,18 @@ class MaterialWidget(QWidget):
         self.condition_combo_box = QComboBox(self)
         self.condition_cb_model = QStringListModel()
         self.condition_combo_box.setModel(self.condition_cb_model)
-        # self.material_combo_box.currentTextChanged.connect(self._users_combo_box_changed)
+        self.condition_combo_box.currentTextChanged.connect(self.__condition_combo_box_changed)
         layout.addWidget(self.condition_combo_box, 5, 0)
 
         self.add_condition_button = QPushButton(self)
         self.add_condition_button.setText("Добавить условие")
-        self.add_condition_button.setEnabled(False)
-        # self.delete_button.clicked.connect(self._delete_button_clicked)
+        self.add_condition_button.clicked.connect(self.__add_condition_button_clicked)
         layout.addWidget(self.add_condition_button, 5, 1)
 
         self.delete_condition_button = QPushButton(self)
         self.delete_condition_button.setText("Удалить условие")
         self.delete_condition_button.setEnabled(False)
-        # self.delete_button.clicked.connect(self._delete_button_clicked)
+        self.delete_condition_button.clicked.connect(self.__delete_condition_button_clicked)
         layout.addWidget(self.delete_condition_button, 5, 2)
 
         return layout
@@ -112,7 +110,31 @@ class MaterialWidget(QWidget):
     def __material_combo_box_changed(self):
         self.delete_material_button.setEnabled(bool(self.material_combo_box.currentText()))
 
+    def __property_combo_box_changed(self):
+        self.delete_property_button.setEnabled(bool(self.property_combo_box.currentText()))
+
+    def __condition_combo_box_changed(self):
+        self.delete_condition_button.setEnabled(bool(self.condition_combo_box.currentText()))
+
     def __delete_button_clicked(self):
         self.math_operator_worker.delete_material(self.material_combo_box.currentText())
         QMessageBox.information(self, "Успех", "Материал был удален")
         self.__init_materials_combo_box()
+
+    def __delete_property_button_clicked(self):
+        self.math_operator_worker.delete_property(self.property_combo_box.currentText())
+        QMessageBox.information(self, "Успех", "Свойство было удалено")
+        self.__init_properties_combo_box()
+
+    def __delete_condition_button_clicked(self):
+        self.math_operator_worker.delete_condition(self.condition_combo_box.currentText())
+        QMessageBox.information(self, "Успех", "Условие было удалено")
+        self.__init_conditions_combo_box()
+
+    def __add_property_button_clicked(self):
+        self.add_property_window = qAddPropertyWindow.AddPropertyWindow()
+        self.add_property_window.show()
+
+    def __add_condition_button_clicked(self):
+        self.add_condition_window = qAddConditionWindow.AddConditionWindow()
+        self.add_condition_window.show()

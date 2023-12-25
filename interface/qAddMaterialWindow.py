@@ -3,7 +3,7 @@ from sqlite3 import IntegrityError
 from PyQt6.QtWidgets import QWidget, QMainWindow, QGridLayout, QLabel, QApplication, QLineEdit, QComboBox, QPushButton, \
     QMessageBox
 
-from database import admin_bd, material_bd
+from database import material_bd
 
 
 class AddMaterialWindow(QMainWindow):
@@ -19,9 +19,6 @@ class AddMaterialWindow(QMainWindow):
 
         self._center()
 
-        self.math_operator_worker = material_bd.MaterialDataBaseWorker()
-        self._init_unit_combobox()
-
     def _get_layout(self):
         layout = QGridLayout()
 
@@ -30,50 +27,31 @@ class AddMaterialWindow(QMainWindow):
 
         self.material_input = QLineEdit("")
         self.material_input.setPlaceholderText('Введите новый материал')
-        self.material_input.textChanged.connect(self._input_add_new_material_changed)
+        self.material_input.textChanged.connect(self.__input_add_new_material_changed)
         layout.addWidget(self.material_input, 0, 1)
-
-        self.unit_label = QLabel("Выберите единицу измерения")
-        layout.addWidget(self.unit_label, 1, 0)
-
-        self.unit_combobox = QComboBox(self)
-        # self.unit_input.setPlaceholderText('Введите единицу измерения')
-        # self.unit_input.textChanged.connect(self._input_add_new_material_changed)
-        layout.addWidget(self.unit_combobox, 1, 1)
-
-        # self.user_type_label = QLabel("Выберите тип пользователя")
-        # layout.addWidget(self.user_type_label, 2, 0)
-        #
-        # self.type_combobox = QComboBox(self)
-        # layout.addWidget(self.type_combobox, 2, 1)
 
         self.add_button = QPushButton(self)
         self.add_button.setText("Добавить материал")
         self.add_button.setEnabled(False)
-        self.add_button.clicked.connect(self._add_button_clicked)
-        layout.addWidget(self.add_button, 2, 0, 2, 0)
+        self.add_button.clicked.connect(self.__add_button_clicked)
+        layout.addWidget(self.add_button, 1, 0, 2, 0)
 
         return layout
 
     def _center(self):
         pass
 
-    def _input_add_new_material_changed(self):
-        self.add_button.setEnabled(bool(self.material_input.text() and self.unit_combobox.currentText()))
+    def __input_add_new_material_changed(self):
+        self.add_button.setEnabled(bool(self.material_input.text()))
 
-    def _add_button_clicked(self):
+    def __add_button_clicked(self):
+        math_operator_worker = material_bd.MaterialDataBaseWorker()
         try:
-            self.math_operator_worker.insert_material(self.material_input.text())
+            math_operator_worker.insert_material(self.material_input.text())
         except IntegrityError as e:
             QMessageBox.critical(self, "Ошибка", "Материал с таким названием уже существует")
             return
         QMessageBox.information(self, "Успех", "Материал успешно добавлен")
-
-    def _init_unit_combobox(self):
-        units = self.math_operator_worker.get_units()
-        units = list(map(lambda x: x[0], units))
-        self.unit_combobox.clear()
-        self.unit_combobox.addItems(units)
 
 
 if __name__ == "__main__":

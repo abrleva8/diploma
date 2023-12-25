@@ -23,9 +23,19 @@ class MaterialDataBaseWorker:
         self.cur.execute("SELECT name FROM property")
         return self.cur.fetchall()
 
+    def insert_property(self, name, unit):
+        id_unit = self.get_id_unit(unit)[0][0]
+        self.cur.execute("INSERT INTO property(name, id_unit) VALUES (?,?)", (name, id_unit))
+        self.conn.commit()
+
     def get_conditions(self):
         self.cur.execute("SELECT name FROM condition")
         return self.cur.fetchall()
+
+    def insert_condition(self, name, unit):
+        id_unit = self.get_id_unit(unit)[0][0]
+        self.cur.execute("INSERT INTO condition(name, id_unit) VALUES (?, ?)", (name, id_unit))
+        self.conn.commit()
 
     def get_units(self):
         self.cur.execute("SELECT denote FROM unit")
@@ -34,3 +44,15 @@ class MaterialDataBaseWorker:
     def delete_material(self, name):
         self.cur.execute("DELETE FROM raw_material WHERE name = (?)", (name,))
         self.conn.commit()
+
+    def delete_property(self, name):
+        self.cur.execute("DELETE FROM property WHERE name = (?)", (name,))
+        self.conn.commit()
+
+    def delete_condition(self, name):
+        self.cur.execute("DELETE FROM condition WHERE name = (?)", (name,))
+        self.conn.commit()
+
+    def get_id_unit(self, unit):
+        self.cur.execute(f"SELECT id_unit FROM unit WHERE denote = '{unit}'")
+        return self.cur.fetchall()
