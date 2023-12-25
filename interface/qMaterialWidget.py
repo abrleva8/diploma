@@ -1,7 +1,8 @@
 from PyQt6.QtCore import Qt, QStringListModel
-from PyQt6.QtWidgets import QWidget, QGridLayout, QLabel, QComboBox, QPushButton
+from PyQt6.QtWidgets import QWidget, QGridLayout, QLabel, QComboBox, QPushButton, QMessageBox
 
 from database import material_bd
+from interface import qAddMaterialWindow
 
 
 class MaterialWidget(QWidget):
@@ -11,6 +12,9 @@ class MaterialWidget(QWidget):
         self.setLayout(self.layout)
 
         self.math_operator_worker = material_bd.MaterialDataBaseWorker()
+        self.init_combox()
+
+    def init_combox(self):
         self.__init_materials_combo_box()
         self.__init_properties_combo_box()
         self.__init_conditions_combo_box()
@@ -25,19 +29,18 @@ class MaterialWidget(QWidget):
 
         self.material_cb_model = QStringListModel()
         self.material_combo_box.setModel(self.material_cb_model)
-        # self.material_combo_box.currentTextChanged.connect(self._users_combo_box_changed)
+        self.material_combo_box.currentTextChanged.connect(self.__material_combo_box_changed)
         layout.addWidget(self.material_combo_box, 1, 0)
 
         self.add_material_button = QPushButton(self)
         self.add_material_button.setText("Добавить материал")
-        self.add_material_button.setEnabled(False)
-        # self.delete_button.clicked.connect(self._delete_button_clicked)
+        self.add_material_button.clicked.connect(self.__add_button_clicked)
         layout.addWidget(self.add_material_button, 1, 1)
 
         self.delete_material_button = QPushButton(self)
         self.delete_material_button.setText("Удалить материал")
         self.delete_material_button.setEnabled(False)
-        # self.delete_button.clicked.connect(self._delete_button_clicked)
+        self.delete_material_button.clicked.connect(self.__delete_button_clicked)
         layout.addWidget(self.delete_material_button, 1, 2)
 
         self.property_label = QLabel("Свойства")
@@ -102,3 +105,14 @@ class MaterialWidget(QWidget):
         self.condition_combo_box.clear()
         self.condition_combo_box.addItems(conditions)
 
+    def __add_button_clicked(self):
+        self.add_material_window = qAddMaterialWindow.AddMaterialWindow()
+        self.add_material_window.show()
+
+    def __material_combo_box_changed(self):
+        self.delete_material_button.setEnabled(bool(self.material_combo_box.currentText()))
+
+    def __delete_button_clicked(self):
+        self.math_operator_worker.delete_material(self.material_combo_box.currentText())
+        QMessageBox.information(self, "Успех", "Материал был удален")
+        self.__init_materials_combo_box()

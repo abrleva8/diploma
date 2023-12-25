@@ -1,9 +1,7 @@
-from PyQt6.QtCore import QStringListModel
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QLabel, QGridLayout, QComboBox, QLayout, QPushButton, \
-    QLineEdit, QMessageBox
 
-from database import admin_bd
-from interface import qAddUserWindow
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QMessageBox
+
+from database import material_bd
 from interface.qMaterialWidget import MaterialWidget
 from interface.qUserWidget import UserWidget
 
@@ -20,6 +18,8 @@ class MathOperatorWidgets(QWidget):
         self.tab3 = QWidget()
         self.tabs.resize(300, 200)
 
+        self.tabs.tabBarClicked.connect(self.__material_tab_clicked)
+
         # Add tabs
         self.tabs.addTab(self.user_tab, "Пользователи")
         self.tabs.addTab(self.materials, "Материалы")
@@ -28,3 +28,8 @@ class MathOperatorWidgets(QWidget):
         # Add tabs to widget
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
+
+    def __material_tab_clicked(self, index):
+        self.material_bd_worker = material_bd.MaterialDataBaseWorker()
+        if index == 1:
+            self.materials.init_combox()
