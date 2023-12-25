@@ -2,9 +2,9 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QMainWindow, QGridLayout, QLayout, QLabel, QWidget, QLineEdit, QPushButton, QApplication, \
     QMessageBox
 
+import qMathOperatorWindow
+import qResearcherWindow
 from database import admin_bd
-
-import qResearcherWindow, qMathOperatorWindow
 
 
 class LoginWindow(QMainWindow):

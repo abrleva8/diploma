@@ -1,6 +1,6 @@
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QApplication, QMainWindow
-from interface.MathOperatorTabWidget import MathOperatorWidgets
+from interface.qMathOperatorTabWidget import MathOperatorWidgets
 
 
 class MathOperatorWindow(QMainWindow):

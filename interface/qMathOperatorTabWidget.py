@@ -4,7 +4,8 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QLabel, QGridLayou
 
 from database import admin_bd
 from interface import qAddUserWindow
-from interface.UserWidget import UserWidget
+from interface.qMaterialWidget import MaterialWidget
+from interface.qUserWidget import UserWidget
 
 
 class MathOperatorWidgets(QWidget):
@@ -15,14 +16,14 @@ class MathOperatorWidgets(QWidget):
         # Initialize tab screen
         self.tabs = QTabWidget()
         self.user_tab = UserWidget()
-        self.materials = QWidget()
+        self.materials = MaterialWidget()
         self.tab3 = QWidget()
         self.tabs.resize(300, 200)
 
         # Add tabs
         self.tabs.addTab(self.user_tab, "Пользователи")
         self.tabs.addTab(self.materials, "Материалы")
-        self.tabs.addTab(self.tab3, "Отчёты")
+        # self.tabs.addTab(self.tab3, "Отчёты")
 
         # Add tabs to widget
         self.layout.addWidget(self.tabs)
