@@ -3,7 +3,7 @@ import sqlite3
 
 class MaterialDataBaseWorker:
     def __init__(self):
-        self.conn = sqlite3.connect('../data/materials.db')
+        self.conn = sqlite3.connect(r'C:\Users\Ilia\PycharmProjects\diploma\data\materials.db')
         self.cur = self.conn.cursor()
 
     def __del__(self):
@@ -37,6 +37,12 @@ class MaterialDataBaseWorker:
         self.cur.execute("INSERT INTO condition(name, id_unit) VALUES (?, ?)", (name, id_unit))
         self.conn.commit()
 
+    def insert_result(self, parameter_name, unit):
+        id_unit = self.get_id_unit(unit)[0][0]
+        self.cur.execute("INSERT INTO result(parameter_name, id_unit) VALUES (?, ?)",
+                         (parameter_name, id_unit))
+        self.conn.commit()
+
     def get_units(self):
         self.cur.execute("SELECT denote FROM unit")
         return self.cur.fetchall()
@@ -53,6 +59,14 @@ class MaterialDataBaseWorker:
         self.cur.execute("DELETE FROM condition WHERE name = (?)", (name,))
         self.conn.commit()
 
+    def delete_result(self, parameter_name):
+        self.cur.execute("DELETE FROM result WHERE parameter_name = (?)", (parameter_name,))
+        self.conn.commit()
+
     def get_id_unit(self, unit):
         self.cur.execute(f"SELECT id_unit FROM unit WHERE denote = '{unit}'")
+        return self.cur.fetchall()
+
+    def get_results(self):
+        self.cur.execute("SELECT parameter_name FROM result")
         return self.cur.fetchall()

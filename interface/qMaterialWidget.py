@@ -2,7 +2,7 @@ from PyQt6.QtCore import Qt, QStringListModel
 from PyQt6.QtWidgets import QWidget, QGridLayout, QLabel, QComboBox, QPushButton, QMessageBox
 
 from database import material_bd
-from interface import qAddMaterialWindow, qAddPropertyWindow, qAddConditionWindow
+from interface import qAddMaterialWindow, qAddPropertyWindow, qAddConditionWindow, qAddResultWindow
 
 
 class MaterialWidget(QWidget):
@@ -18,6 +18,7 @@ class MaterialWidget(QWidget):
         self.__init_materials_combo_box()
         self.__init_properties_combo_box()
         self.__init_conditions_combo_box()
+        self.__init_result_combo_box()
 
     def __get_material_layout(self):
         layout = QGridLayout()
@@ -83,6 +84,26 @@ class MaterialWidget(QWidget):
         self.delete_condition_button.clicked.connect(self.__delete_condition_button_clicked)
         layout.addWidget(self.delete_condition_button, 5, 2)
 
+        self.result_label = QLabel("Результат")
+        layout.addWidget(self.result_label, 6, 0, 1, 2)
+
+        self.result_combo_box = QComboBox(self)
+        self.result_cb_model = QStringListModel()
+        self.result_combo_box.setModel(self.result_cb_model)
+        self.result_combo_box.currentTextChanged.connect(self.__result_combo_box_changed)
+        layout.addWidget(self.result_combo_box, 7, 0)
+
+        self.add_result_button = QPushButton(self)
+        self.add_result_button.setText("Добавить результат")
+        self.add_result_button.clicked.connect(self.__add_result_button_clicked)
+        layout.addWidget(self.add_result_button, 7, 1)
+
+        self.delete_result_button = QPushButton(self)
+        self.delete_result_button.setText("Удалить результат")
+        self.delete_result_button.setEnabled(False)
+        self.delete_result_button.clicked.connect(self.__delete_result_button_clicked)
+        layout.addWidget(self.delete_result_button, 7, 2)
+
         return layout
 
     def __init_materials_combo_box(self):
@@ -103,6 +124,12 @@ class MaterialWidget(QWidget):
         self.condition_combo_box.clear()
         self.condition_combo_box.addItems(conditions)
 
+    def __init_result_combo_box(self):
+        results = self.math_operator_worker.get_results()
+        results = list(map(lambda x: x[0], results))
+        self.result_combo_box.clear()
+        self.result_combo_box.addItems(results)
+
     def __add_button_clicked(self):
         self.add_material_window = qAddMaterialWindow.AddMaterialWindow()
         self.add_material_window.show()
@@ -115,6 +142,9 @@ class MaterialWidget(QWidget):
 
     def __condition_combo_box_changed(self):
         self.delete_condition_button.setEnabled(bool(self.condition_combo_box.currentText()))
+
+    def __result_combo_box_changed(self):
+        self.delete_result_button.setEnabled(bool(self.result_combo_box.currentText()))
 
     def __delete_button_clicked(self):
         self.math_operator_worker.delete_material(self.material_combo_box.currentText())
@@ -131,6 +161,11 @@ class MaterialWidget(QWidget):
         QMessageBox.information(self, "Успех", "Условие было удалено")
         self.__init_conditions_combo_box()
 
+    def __delete_result_button_clicked(self):
+        self.math_operator_worker.delete_result(self.result_combo_box.currentText())
+        QMessageBox.information(self, "Успех", "Результат был удален")
+        self.__init_result_combo_box()
+
     def __add_property_button_clicked(self):
         self.add_property_window = qAddPropertyWindow.AddPropertyWindow()
         self.add_property_window.show()
@@ -138,3 +173,7 @@ class MaterialWidget(QWidget):
     def __add_condition_button_clicked(self):
         self.add_condition_window = qAddConditionWindow.AddConditionWindow()
         self.add_condition_window.show()
+
+    def __add_result_button_clicked(self):
+        self.add_result_window = qAddResultWindow.AddResultWindow()
+        self.add_result_window.show()
