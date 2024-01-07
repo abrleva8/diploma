@@ -1,8 +1,8 @@
 from PyQt6.QtCore import QStringListModel
-from PyQt6.QtWidgets import QVBoxLayout, QWidget, QComboBox, QLayout, QGridLayout, QLineEdit, QPushButton, QMessageBox
+from PyQt6.QtWidgets import QWidget, QComboBox, QLayout, QGridLayout, QLineEdit, QPushButton, QMessageBox
 
 from database import admin_bd
-from interface import qAddUserWindow
+from interface.qAddWindows import qAddUserWindow
 
 
 class UserWidget(QWidget):

@@ -3,7 +3,6 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog, QHBoxLayout,
     QWidget
 
 import pandas as pd
-from PyQt6 import QtWidgets
 
 from math_model import PandasModel, LinRegression
 from plotting.canvas import Canvas

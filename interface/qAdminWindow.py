@@ -1,15 +1,15 @@
 from PyQt6 import QtGui
 from PyQt6.QtWidgets import QApplication, QMainWindow
-from interface.qMathOperatorTabWidget import MathOperatorWidgets
+from interface.qAdminTabWidget import AdminWidgets
 
 
-class MathOperatorWindow(QMainWindow):
+class AdminWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Специалист по математическому обеспечению")
-        self.setFixedSize(500, 300)
+        self.setWindowTitle("Администратор")
+        self.setFixedSize(700, 300)
 
-        self.tab_widget = MathOperatorWidgets(self)
+        self.tab_widget = AdminWidgets(self)
         self.setCentralWidget(self.tab_widget)
 
         self._center()
@@ -25,6 +25,6 @@ if __name__ == "__main__":
     import sys
 
     app = QApplication(sys.argv)
-    window = MathOperatorWindow()
+    window = AdminWindow()
     window.show()
     sys.exit(app.exec())

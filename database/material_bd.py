@@ -15,7 +15,7 @@ class MaterialDataBaseWorker:
         self.cur.execute("SELECT name FROM raw_material")
         return self.cur.fetchall()
 
-    def insert_material(self, name):
+    def insert_material(self, name: str):
         self.cur.execute("INSERT INTO raw_material(name) VALUES (?)", (name,))
         self.conn.commit()
 
@@ -43,6 +43,10 @@ class MaterialDataBaseWorker:
                          (parameter_name, id_unit))
         self.conn.commit()
 
+    def insert_unit(self, unit_denote):
+        self.cur.execute("INSERT INTO unit(denote) VALUES (?)", (unit_denote,))
+        self.conn.commit()
+
     def get_units(self):
         self.cur.execute("SELECT denote FROM unit")
         return self.cur.fetchall()
@@ -61,6 +65,10 @@ class MaterialDataBaseWorker:
 
     def delete_result(self, parameter_name):
         self.cur.execute("DELETE FROM result WHERE parameter_name = (?)", (parameter_name,))
+        self.conn.commit()
+
+    def delete_unit(self, unit_denote: str):
+        self.cur.execute("DELETE FROM unit WHERE denote = (?)", (unit_denote,))
         self.conn.commit()
 
     def get_id_unit(self, unit):

@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QMainWindow, QGridLayout, QLayout, QLabel, QWidget, 
 
 
 from database import admin_bd
-from interface import qResearcherWindow, qMathOperatorWindow
+from interface import qResearcherWindow, qAdminWindow
 
 
 class LoginWindow(QMainWindow):
@@ -67,7 +67,7 @@ class LoginWindow(QMainWindow):
                 self.main_window.show()
                 self.close()
             case 2:
-                self.main_window = qMathOperatorWindow.MathOperatorWindow()
+                self.main_window = qAdminWindow.AdminWindow()
                 self.main_window.show()
                 self.close()
 
