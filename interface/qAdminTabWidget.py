@@ -15,7 +15,6 @@ class AdminWidgets(QWidget):
         self.tabs = QTabWidget()
         self.user_tab = UserWidget()
         self.materials = MaterialWidget()
-        self.tab3 = QWidget()
         self.tabs.resize(300, 200)
 
         self.tabs.tabBarClicked.connect(self.__material_tab_clicked)

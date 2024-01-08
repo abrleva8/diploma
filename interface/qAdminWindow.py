@@ -12,9 +12,9 @@ class AdminWindow(QMainWindow):
         self.tab_widget = AdminWidgets(self)
         self.setCentralWidget(self.tab_widget)
 
-        self._center()
+        self.__center()
 
-    def _center(self):
+    def __center(self):
         qr = self.frameGeometry()
         cp = QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(cp)
