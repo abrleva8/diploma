@@ -125,12 +125,19 @@ class MaterialDataBaseWorker:
                                "INNER JOIN TEMP_TABLE_CONTAINS_ASPHALTENE ON TEMP_TABLE_DENSITY.name = "
                                "TEMP_TABLE_CONTAINS_ASPHALTENE.name;\n"
                                )
-        self.cur.execute("SELECT TEMP_TABLE_DENSITY.name, density, pressure, contain, asphaltene_contain, "
-                         "result\n"
-                         "FROM TEMP_TABLE_DENSITY\n"
-                         "INNER JOIN TEMP_TABLE_RESEARCH ON TEMP_TABLE_DENSITY.name = TEMP_TABLE_RESEARCH.name\n"
-                         "INNER JOIN TEMP_TABLE_CONTAINS_350 ON TEMP_TABLE_DENSITY.name = "
-                         "TEMP_TABLE_CONTAINS_350.name\n"
-                         "INNER JOIN TEMP_TABLE_CONTAINS_ASPHALTENE on TEMP_TABLE_CONTAINS_350.name = "
-                         "TEMP_TABLE_CONTAINS_ASPHALTENE.name;")
-        return self.cur.fetchall()
+
+        cursor = self.cur.execute(
+            "SELECT TEMP_TABLE_DENSITY.name as `Название`, density as `Плотность`,"
+            "pressure as `Давление`, contain as `Содержание 350+`,"
+            "asphaltene_contain as `Содержание асфальтенов`, result as `Результат`\n"
+            "FROM TEMP_TABLE_DENSITY\n"
+            "INNER JOIN TEMP_TABLE_RESEARCH ON TEMP_TABLE_DENSITY.name = TEMP_TABLE_RESEARCH.name\n"
+            "INNER JOIN TEMP_TABLE_CONTAINS_350 ON TEMP_TABLE_DENSITY.name = "
+            "TEMP_TABLE_CONTAINS_350.name\n"
+            "INNER JOIN TEMP_TABLE_CONTAINS_ASPHALTENE on TEMP_TABLE_CONTAINS_350.name = "
+            "TEMP_TABLE_CONTAINS_ASPHALTENE.name;"
+        )
+
+        names = [fields[0] for fields in cursor.description]
+
+        return names, self.cur.fetchall()

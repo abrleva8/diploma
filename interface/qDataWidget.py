@@ -62,10 +62,11 @@ class DataWidget(QWidget):
             QMessageBox.warning(self, 'Ошибка', 'Файл не выбран')
 
     def __get_full_dataset(self):
-        data = self.math_operator_worker.get_full_dataset()
+        keys, data = self.math_operator_worker.get_full_dataset()
 
         self.table.setRowCount(len(data))
         self.table.setColumnCount(len(data[0]))
+        self.table.setHorizontalHeaderLabels(keys)
 
         for i, row in enumerate(data):
             for j, val in enumerate(row):
