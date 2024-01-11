@@ -1,4 +1,5 @@
 import pandas as pd
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QLayout, QGridLayout, QHBoxLayout, QPushButton, QTableView, QFileDialog, \
     QMessageBox, QVBoxLayout, QTableWidgetItem, QTableWidget
 
@@ -10,6 +11,7 @@ from math_model import PandasModel
 class DataWidget(QWidget):
     def __init__(self):
         super(QWidget, self).__init__()
+
         self.my_layout = self.__get_user_layout()
         self.setLayout(self.my_layout)
 
@@ -29,14 +31,19 @@ class DataWidget(QWidget):
     def __button_layout(self) -> QLayout:
         layout = QVBoxLayout()
 
-        data_from_base = QPushButton("Загрузить из базы")
-        data_from_file = QPushButton("Загрузить из файла")
+        data_from_base = QPushButton('Загрузить из базы')
+        data_from_file = QPushButton('Загрузить из файла')
+        confirm_data = QPushButton('Подтвердить выбор данных')
+        confirm_data.setObjectName('confirm_data')
+        confirm_data.setEnabled(False)
 
         data_from_base.clicked.connect(self.__get_full_dataset)
         data_from_file.clicked.connect(self.__open_file_dialog)
+        confirm_data.clicked.connect(self.__confirm_data)
 
         layout.addWidget(data_from_base)
         layout.addWidget(data_from_file)
+        layout.addWidget(confirm_data)
 
         layout.setObjectName('layout_buttons')
 
@@ -71,6 +78,11 @@ class DataWidget(QWidget):
         for i, row in enumerate(data):
             for j, val in enumerate(row):
                 self.table.setItem(i, j, QTableWidgetItem(str(val)))
+
+        self.my_layout.parentWidget().findChild(QPushButton, 'confirm_data').setEnabled(True)
+
+    def __confirm_data(self):
+        pass
 
     def __read_data(self, file_name) -> pd.DataFrame | None:
         # format = file_name.split('.')[-1]

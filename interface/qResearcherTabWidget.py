@@ -1,6 +1,7 @@
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTabWidget
+from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTabWidget, QPushButton
 
 from interface.qDataWidget import DataWidget
+from interface.qMathModelWidget import MathModelWidget
 
 
 class ResearcherWidget(QWidget):
@@ -12,9 +13,17 @@ class ResearcherWidget(QWidget):
         self.tabs = QTabWidget()
         self.tabs.resize(300, 200)
         self.data_tab = DataWidget()
+        self.math_model_tab = MathModelWidget()
 
         # Add tabs
         self.tabs.addTab(self.data_tab, "Выбор данных")
+        self.tabs.addTab(self.math_model_tab, "Математическая модель")
+
+        # Connect events
+        self.child = self.data_tab.my_layout.parentWidget().findChild(QPushButton, 'confirm_data')
+        self.child.clicked.connect(
+            lambda: self.math_model_tab.set_table_widget(self.data_tab.table)
+        )
 
         # Add tabs to widget
         self.layout.addWidget(self.tabs)
