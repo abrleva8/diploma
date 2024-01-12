@@ -62,5 +62,5 @@ class UserWidget(QWidget):
         self.add_button.setEnabled(bool(self.input_add_new_user.text()))
 
     def _add_button_clicked(self):
-        self.admin = qAddUserWindow.AddWindow()
+        self.admin = AddUserWindow()
         self.admin.show()

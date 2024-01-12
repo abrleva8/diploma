@@ -2,6 +2,8 @@ from PyQt6.QtCore import QStringListModel
 from PyQt6.QtWidgets import QWidget, QGridLayout, QLabel, QComboBox, QPushButton, QMessageBox
 
 from database import material_bd
+from interface import qEditWindows
+from interface.qEditWindows import qEditUnitWindow, qEditPropertyWindow
 from interface.qAddWindows import qAddResultWindow, qAddPropertyWindow, qAddMaterialWindow, qAddConditionWindow, \
     qAddUnitWindow
 
@@ -26,57 +28,47 @@ class MaterialWidget(QWidget):
         layout = QGridLayout()
 
         self.material_label = QLabel("Материалы")
-        layout.addWidget(self.material_label, 0, 0, 1, 2)
 
         self.material_combo_box = QComboBox(self)
 
         self.material_cb_model = QStringListModel()
         self.material_combo_box.setModel(self.material_cb_model)
         self.material_combo_box.currentTextChanged.connect(self.__material_combo_box_changed)
-        layout.addWidget(self.material_combo_box, 1, 0)
 
         self.add_material_button = QPushButton(self)
         self.add_material_button.setText("Добавить материал")
         self.add_material_button.clicked.connect(self.__add_material_button_clicked)
-        layout.addWidget(self.add_material_button, 1, 1)
 
         self.edit_material_button = QPushButton(self)
         self.edit_material_button.setText("Изменить материал")
         self.edit_material_button.setEnabled(False)
         self.edit_material_button.clicked.connect(self.__edit_material_button_clicked)
-        layout.addWidget(self.edit_material_button, 1, 2)
 
         self.delete_material_button = QPushButton(self)
         self.delete_material_button.setText("Удалить материал")
         self.delete_material_button.setEnabled(False)
         self.delete_material_button.clicked.connect(self.__delete_material_button_clicked)
-        layout.addWidget(self.delete_material_button, 1, 3)
 
         self.property_label = QLabel("Свойства")
-        layout.addWidget(self.property_label, 2, 0, 1, 2)
 
         self.property_combo_box = QComboBox(self)
         self.property_cb_model = QStringListModel()
         self.property_combo_box.setModel(self.property_cb_model)
         self.property_combo_box.currentTextChanged.connect(self.__property_combo_box_changed)
-        layout.addWidget(self.property_combo_box, 3, 0)
 
         self.add_property_button = QPushButton(self)
         self.add_property_button.setText("Добавить свойство")
         self.add_property_button.clicked.connect(self.__add_property_button_clicked)
-        layout.addWidget(self.add_property_button, 3, 1)
 
         self.edit_property_button = QPushButton(self)
         self.edit_property_button.setText("Изменить свойство")
         self.edit_property_button.setEnabled(False)
         self.edit_property_button.clicked.connect(self.__edit_property_button_clicked)
-        layout.addWidget(self.edit_property_button, 3, 2)
 
         self.delete_property_button = QPushButton(self)
         self.delete_property_button.setText("Удалить свойство")
         self.delete_property_button.setEnabled(False)
         self.delete_property_button.clicked.connect(self.__delete_property_button_clicked)
-        layout.addWidget(self.delete_property_button, 3, 3)
 
         self.unit_label = QLabel("Единицы измерения")
         layout.addWidget(self.unit_label, 4, 0, 1, 2)
@@ -156,6 +148,17 @@ class MaterialWidget(QWidget):
         self.delete_result_button.clicked.connect(self.__delete_result_button_clicked)
         layout.addWidget(self.delete_result_button, 9, 3)
 
+        layout.addWidget(self.material_label, 0, 0, 1, 2)
+        layout.addWidget(self.material_combo_box, 1, 0)
+        layout.addWidget(self.add_material_button, 1, 1)
+        layout.addWidget(self.edit_material_button, 1, 2)
+        layout.addWidget(self.delete_material_button, 1, 3)
+        layout.addWidget(self.property_label, 2, 0, 1, 2)
+        layout.addWidget(self.property_combo_box, 3, 0)
+        layout.addWidget(self.add_property_button, 3, 1)
+        layout.addWidget(self.edit_property_button, 3, 2)
+        layout.addWidget(self.delete_property_button, 3, 3)
+
         return layout
 
     def __init_materials_combo_box(self):
@@ -195,7 +198,7 @@ class MaterialWidget(QWidget):
     def __material_combo_box_changed(self):
         has_text = bool(self.material_combo_box.currentText())
         self.delete_material_button.setEnabled(has_text)
-        self.edit_material_button.setEnabled(has_text)
+        # self.edit_material_button.setEnabled(has_text)
 
     def __property_combo_box_changed(self):
         has_text = bool(self.property_combo_box.currentText())
@@ -205,12 +208,12 @@ class MaterialWidget(QWidget):
     def __condition_combo_box_changed(self):
         has_text = bool(self.condition_combo_box.currentText())
         self.delete_condition_button.setEnabled(has_text)
-        self.edit_condition_button.setEnabled(has_text)
+        # self.edit_condition_button.setEnabled(has_text)
 
     def __result_combo_box_changed(self):
         has_text = bool(self.result_combo_box.currentText())
         self.delete_result_button.setEnabled(has_text)
-        self.edit_result_button.setEnabled(has_text)
+        # self.edit_result_button.setEnabled(has_text)
 
     def __unit_combo_box_changed(self):
         has_text = bool(self.unit_combo_box.currentText())
@@ -262,7 +265,10 @@ class MaterialWidget(QWidget):
         pass
 
     def __edit_property_button_clicked(self):
-        pass
+        current_unit = self.math_operator_worker.get_unit_by_property_name(self.property_combo_box.currentText())[0][0]
+        self.edit_property_window = qEditPropertyWindow.EditPropertyWindow(self.property_combo_box.currentText(),
+                                                                           current_unit)
+        self.edit_property_window.show()
 
     def __edit_condition_button_clicked(self):
         pass
@@ -271,4 +277,5 @@ class MaterialWidget(QWidget):
         pass
 
     def __edit_unit_button_clicked(self):
-        pass
+        self.edit_unit_window = qEditUnitWindow.EditUnitWindow(self.unit_combo_box.currentText())
+        self.edit_unit_window.show()

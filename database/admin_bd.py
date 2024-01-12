@@ -3,7 +3,8 @@ import sqlite3
 
 class UserDataBaseWorker:
     def __init__(self):
-        self.conn = sqlite3.connect(r'C:\Users\Ilia\PycharmProjects\diploma\data\users.db')
+        # self.conn = sqlite3.connect(r"C:\Users\Ilia\PycharmProjects\diploma\data\users.db")
+        self.conn = sqlite3.connect(r"../data/users.db")
         self.cur = self.conn.cursor()
 
     def __del__(self):

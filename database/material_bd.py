@@ -3,7 +3,8 @@ import sqlite3
 
 class MaterialDataBaseWorker:
     def __init__(self):
-        self.conn = sqlite3.connect(r'C:\Users\Ilia\PycharmProjects\diploma\data\materials.db')
+        # self.conn = sqlite3.connect(r"C:\Users\Ilia\PycharmProjects\diploma\data\materials.db")
+        self.conn = sqlite3.connect(r"../data/materials.db")
         self.cur = self.conn.cursor()
 
     def __del__(self):
@@ -47,6 +48,13 @@ class MaterialDataBaseWorker:
         self.cur.execute("INSERT INTO unit(denote) VALUES (?)", (unit_denote,))
         self.conn.commit()
 
+    def get_unit_by_property_name(self, property_name):
+        self.cur.execute("SELECT denote\n"
+                         "FROM unit\n"
+                         "INNER JOIN property ON unit.id_unit = property.id_unit\n"
+                         "WHERE property.name = (?);", (property_name,))
+        return self.cur.fetchall()
+
     def get_units(self):
         self.cur.execute("SELECT denote FROM unit")
         return self.cur.fetchall()
@@ -78,6 +86,10 @@ class MaterialDataBaseWorker:
     def get_results(self):
         self.cur.execute("SELECT parameter_name FROM result")
         return self.cur.fetchall()
+
+    def edit_unit(self, curr_unit_denote: str, new_unit_denote: str):
+        self.cur.execute(f"UPDATE unit SET denote = (?) WHERE denote = (?)", (new_unit_denote, curr_unit_denote))
+        self.conn.commit()
 
     def get_full_dataset(self):
         self.cur.executescript("DROP TABLE IF EXISTS TEMP_TABLE_DENSITY;\n"

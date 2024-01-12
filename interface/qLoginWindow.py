@@ -4,13 +4,14 @@ from PyQt6.QtWidgets import QMainWindow, QGridLayout, QLayout, QLabel, QWidget, 
 
 
 from database import admin_bd
-from interface import qResearcherWindow, qAdminWindow
+from interface.qAdminWindow import AdminWindow
+from interface.qResearcherWindow import ResearcherWindow
 
 
 class LoginWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Регистрация")
+        self.setWindowTitle("Авторизация")
 
         layout = self._get_layout()
         main_widget = QWidget()
@@ -20,7 +21,7 @@ class LoginWindow(QMainWindow):
 
     def _get_layout(self) -> QLayout:
         layout = QGridLayout()
-        title = QLabel("Окно регистрации")
+        title = QLabel("Окно авторизации")
         layout.addWidget(title, 0, 1, 1, 2, Qt.AlignmentFlag.AlignCenter)
 
         label_login = QLabel("Логин")
@@ -63,11 +64,11 @@ class LoginWindow(QMainWindow):
 
         match id_user_type:
             case 1:
-                self.main_window = qResearcherWindow.ResearcherWindow()
+                self.main_window = ResearcherWindow()
                 self.main_window.show()
                 self.close()
             case 2:
-                self.main_window = qAdminWindow.AdminWindow()
+                self.main_window = AdminWindow()
                 self.main_window.show()
                 self.close()
 

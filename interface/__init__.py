@@ -1,1 +1,2 @@
-from .qLoginWindow import LoginWindow
+from interface import qAdminTabWidget, qLoginWindow
+
