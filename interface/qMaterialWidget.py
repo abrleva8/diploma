@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QWidget, QGridLayout, QLabel, QComboBox, QPushButton
 
 from database import material_bd
 from interface import qEditWindows
-from interface.qEditWindows import qEditUnitWindow, qEditPropertyWindow
+from interface.qEditWindows import qEditUnitWindow, qEditPropertyWindow, qEditResultWindow
 from interface.qAddWindows import qAddResultWindow, qAddPropertyWindow, qAddMaterialWindow, qAddConditionWindow, \
     qAddUnitWindow
 
@@ -213,7 +213,7 @@ class MaterialWidget(QWidget):
     def __result_combo_box_changed(self):
         has_text = bool(self.result_combo_box.currentText())
         self.delete_result_button.setEnabled(has_text)
-        # self.edit_result_button.setEnabled(has_text)
+        self.edit_result_button.setEnabled(has_text)
 
     def __unit_combo_box_changed(self):
         has_text = bool(self.unit_combo_box.currentText())
@@ -274,7 +274,10 @@ class MaterialWidget(QWidget):
         pass
 
     def __edit_result_button_clicked(self):
-        pass
+        current_result = self.result_combo_box.currentText()
+        current_unit_name = self.math_operator_worker.get_unit_by_result_name(current_result)[0][0]
+        self.edit_window = qEditResultWindow.EditResultWindow(current_result, current_unit_name)
+        self.edit_window.show()
 
     def __edit_unit_button_clicked(self):
         self.edit_unit_window = qEditUnitWindow.EditUnitWindow(self.unit_combo_box.currentText())

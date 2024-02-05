@@ -55,6 +55,13 @@ class MaterialDataBaseWorker:
                          "WHERE property.name = (?);", (property_name,))
         return self.cur.fetchall()
 
+    def get_unit_by_result_name(self, result_name):
+        self.cur.execute("SELECT denote\n"
+                         "FROM unit\n"
+                         "INNER JOIN result ON unit.id_unit = result.id_unit\n"
+                         "WHERE result.parameter_name = (?);", (result_name,))
+        return self.cur.fetchall()
+
     def get_units(self):
         self.cur.execute("SELECT denote FROM unit")
         return self.cur.fetchall()
@@ -90,6 +97,22 @@ class MaterialDataBaseWorker:
     def edit_unit(self, curr_unit_denote: str, new_unit_denote: str):
         self.cur.execute(f"UPDATE unit SET denote = (?) WHERE denote = (?)", (new_unit_denote, curr_unit_denote))
         self.conn.commit()
+
+    def edit_result(self, current_result_name: str, current_unit_name: str, new_result_name: str, new_unit_name: str):
+        curr_id_unit = self.get_id_unit(current_unit_name)[0][0]
+        new_id_unit = self.get_id_unit(new_unit_name)[0][0]
+        self.cur.execute('UPDATE result\n'
+                         f'SET parameter_name = (?), id_unit = (?)\n'
+                         f'WHERE parameter_name = (?) AND id_unit = (?)',
+                         (new_result_name, new_id_unit, current_result_name, curr_id_unit))
+
+    def edit_property(self, current_property_name: str, current_unit_name: str, new_property_name: str, new_unit_name: str):
+        curr_id_unit = self.get_id_unit(current_unit_name)[0][0]
+        new_id_unit = self.get_id_unit(new_unit_name)[0][0]
+        self.cur.execute('UPDATE property\n'
+                         f'SET name = (?), id_unit = (?)\n'
+                         f'WHERE name = (?) AND id_unit = (?)',
+                         (new_property_name, new_id_unit, current_property_name, curr_id_unit))
 
     def get_full_dataset(self):
         self.cur.executescript("DROP TABLE IF EXISTS TEMP_TABLE_DENSITY;\n"

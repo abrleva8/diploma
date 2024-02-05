@@ -6,11 +6,11 @@ from PyQt6.QtWidgets import (QWidget, QMainWindow, QGridLayout, QLabel, QApplica
 from database import material_bd
 
 
-class EditPropertyWindow(QMainWindow):
-    def __init__(self, property_name: str, current_unit_denote: str):
+class EditResultWindow(QMainWindow):
+    def __init__(self, result_name: str, current_unit_denote: str):
         super().__init__()
-        self.setWindowTitle("Изменить свойство")
-        self.property_name = property_name
+        self.setWindowTitle("Изменить результат")
+        self.result_name = result_name
         self.current_unit_denote = current_unit_denote
 
         layout = self.__get_layout()
@@ -26,12 +26,12 @@ class EditPropertyWindow(QMainWindow):
 
         self.curr_name_label = QLabel("Текущее название:")
 
-        self.current_name_label = QLabel(self.property_name)
+        self.current_name_label = QLabel(self.result_name)
 
         self.new_name_label = QLabel("Новое название:")
 
-        self.new_property_name_input = QLineEdit(self.property_name)
-        self.new_property_name_input.textChanged.connect(self.__edit_button_enabled_check)
+        self.new_result_name_input = QLineEdit(self.result_name)
+        self.new_result_name_input.textChanged.connect(self.__edit_button_enabled_check)
 
         self.curr_unit_denote_label = QLabel("Текущая ед. измерения:")
 
@@ -43,15 +43,15 @@ class EditPropertyWindow(QMainWindow):
         self.new_unit_denote_combobox.currentTextChanged.connect(self.__edit_button_enabled_check)
 
         self.edit_button = QPushButton(self)
-        self.edit_button.setText("Изменить свойство")
-        self.edit_button.setEnabled(bool(self.new_property_name_input.text()) and
+        self.edit_button.setText("Изменить результат")
+        self.edit_button.setEnabled(bool(self.new_result_name_input.text()) and
                                     bool(self.new_unit_denote_combobox.currentText()))
         self.edit_button.clicked.connect(self.__edit_button_clicked)
 
         layout.addWidget(self.curr_name_label, 0, 0)
         layout.addWidget(self.current_name_label, 0, 1)
         layout.addWidget(self.new_name_label, 1, 0)
-        layout.addWidget(self.new_property_name_input, 1, 1)
+        layout.addWidget(self.new_result_name_input, 1, 1)
         layout.addWidget(self.curr_unit_denote_label, 2, 0)
         layout.addWidget(self.current_unit_denote_label, 2, 1)
         layout.addWidget(self.new_unit_denote_label, 3, 0)
@@ -69,25 +69,25 @@ class EditPropertyWindow(QMainWindow):
 
     #
     def __edit_button_enabled_check(self):
-        self.edit_button.setEnabled(bool(self.new_property_name_input.text()) and
+        self.edit_button.setEnabled(bool(self.new_result_name_input.text()) and
                                     bool(self.new_unit_denote_combobox.currentText()))
 
     def __edit_button_clicked(self):
         math_operator_worker = material_bd.MaterialDataBaseWorker()
         try:
-            math_operator_worker.edit_property(self.property_name, self.current_unit_denote,
-                                               self.new_property_name_input.text(),
-                                               self.new_unit_denote_combobox.currentText())
+            math_operator_worker.edit_result(self.result_name, self.current_unit_denote,
+                                             self.new_result_name_input.text(),
+                                             self.new_unit_denote_combobox.currentText())
         except IntegrityError as e:
-            QMessageBox.critical(self, "Ошибка", "Свойство с такими параметрами уже существует")
+            QMessageBox.critical(self, "Ошибка", "Результат с такими параметрами уже существует")
             return
-        QMessageBox.information(self, "Успех", "Свойство успешно изменено")
+        QMessageBox.information(self, "Успех", "Результат успешно изменен")
 
 
 if __name__ == "__main__":
     import sys
 
     app = QApplication(sys.argv)
-    window = EditPropertyWindow('test', 'test')
+    window = EditResultWindow('test', 'test')
     window.show()
     sys.exit(app.exec())
