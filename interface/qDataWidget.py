@@ -1,7 +1,7 @@
 import pandas as pd
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QLayout, QGridLayout, QHBoxLayout, QPushButton, QTableView, QFileDialog, \
-    QMessageBox, QVBoxLayout, QTableWidgetItem, QTableWidget, QComboBox, QFormLayout, QLabel
+    QMessageBox, QVBoxLayout, QTableWidgetItem, QTableWidget, QComboBox, QFormLayout, QLabel, QAbstractItemView
 
 from database import material_bd
 from math_model import PandasModel
@@ -60,6 +60,7 @@ class DataWidget(QWidget):
         layout = QGridLayout()
 
         self.table = QTableWidget()
+        self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.table.setObjectName('table_view')
 
         layout.addWidget(self.table)
