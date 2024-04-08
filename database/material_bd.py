@@ -62,6 +62,12 @@ class MaterialDataBaseWorker:
                          "WHERE result.parameter_name = (?);", (result_name,))
         return self.cur.fetchall()
 
+    def get_result_id_by_result_name(self, result_name):
+        self.cur.execute("SELECT id_result\n"
+                         "FROM result\n"
+                         "WHERE result.parameter_name = (?);", (result_name,))
+        return self.cur.fetchall()
+
     def get_units(self):
         self.cur.execute("SELECT denote FROM unit")
         return self.cur.fetchall()
@@ -114,7 +120,10 @@ class MaterialDataBaseWorker:
                          f'WHERE name = (?) AND id_unit = (?)',
                          (new_property_name, new_id_unit, current_property_name, curr_id_unit))
 
-    def get_full_dataset(self):
+    def get_full_dataset(self, result: str):
+
+        id_result = self.get_result_id_by_result_name(result)[0][0]
+
         self.cur.executescript("DROP TABLE IF EXISTS TEMP_TABLE_DENSITY;\n"
                                "CREATE TEMPORARY TABLE TEMP_TABLE_DENSITY AS\n"
                                "SELECT raw_material.name, value AS density\n"
@@ -150,7 +159,7 @@ class MaterialDataBaseWorker:
                                "                            FROM condition_in_set\n"
                                "INNER JOIN research ON condition_in_set.id_condition_set = research.id_condition_set\n"
                                "INNER JOIN raw_material ON raw_material.id_raw_material = research.id_raw_material\n"
-                               "                            WHERE id_result = 1;\n"
+                               f"                            WHERE id_result = {id_result};\n"
                                "                            \n"
                                "                            \n"
                                "SELECT TEMP_TABLE_DENSITY.name, TEMP_TABLE_DENSITY.density, "
@@ -165,7 +174,7 @@ class MaterialDataBaseWorker:
         cursor = self.cur.execute(
             "SELECT TEMP_TABLE_DENSITY.name as `Название`, density as `Плотность`,"
             "pressure as `Давление`, contain as `Содержание 350+`,"
-            "asphaltene_contain as `Содержание асфальтенов`, result as `Результат`\n"
+            f"asphaltene_contain as `Содержание асфальтенов`, result as {result}\n"
             "FROM TEMP_TABLE_DENSITY\n"
             "INNER JOIN TEMP_TABLE_RESEARCH ON TEMP_TABLE_DENSITY.name = TEMP_TABLE_RESEARCH.name\n"
             "INNER JOIN TEMP_TABLE_CONTAINS_350 ON TEMP_TABLE_DENSITY.name = "

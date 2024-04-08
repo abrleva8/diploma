@@ -1,7 +1,7 @@
 import pandas as pd
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QLayout, QGridLayout, QHBoxLayout, QPushButton, QTableView, QFileDialog, \
-    QMessageBox, QVBoxLayout, QTableWidgetItem, QTableWidget
+    QMessageBox, QVBoxLayout, QTableWidgetItem, QTableWidget, QComboBox, QFormLayout, QLabel
 
 from database import material_bd
 from math_model import PandasModel
@@ -16,6 +16,7 @@ class DataWidget(QWidget):
         self.setLayout(self.my_layout)
 
         self.math_operator_worker = material_bd.MaterialDataBaseWorker()
+        self.__init_result_combo_box()
 
     def __get_user_layout(self) -> QLayout:
         layout = QHBoxLayout()
@@ -30,7 +31,10 @@ class DataWidget(QWidget):
 
     def __button_layout(self) -> QLayout:
         layout = QVBoxLayout()
+        filter_layout = QFormLayout()
 
+        result_lbl = QLabel('Результат')
+        self.result_cmb = QComboBox(self)
         data_from_base = QPushButton('Загрузить из базы')
         data_from_file = QPushButton('Загрузить из файла')
         confirm_data = QPushButton('Подтвердить выбор данных')
@@ -41,6 +45,9 @@ class DataWidget(QWidget):
         data_from_file.clicked.connect(self.__open_file_dialog)
         confirm_data.clicked.connect(self.__confirm_data)
 
+        filter_layout.addRow(result_lbl, self.result_cmb)
+
+        layout.addLayout(filter_layout)
         layout.addWidget(data_from_base)
         layout.addWidget(data_from_file)
         layout.addWidget(confirm_data)
@@ -68,8 +75,9 @@ class DataWidget(QWidget):
         else:
             QMessageBox.warning(self, 'Ошибка', 'Файл не выбран')
 
-    def __get_full_dataset(self):
-        keys, data = self.math_operator_worker.get_full_dataset()
+    def __get_full_dataset(self) -> None:
+        result = self.result_cmb.currentText()
+        keys, data = self.math_operator_worker.get_full_dataset(result)
 
         self.table.setRowCount(len(data))
         self.table.setColumnCount(len(data[0]))
@@ -83,6 +91,12 @@ class DataWidget(QWidget):
 
     def __confirm_data(self):
         pass
+
+    def __init_result_combo_box(self) -> None:
+        results = self.math_operator_worker.get_results()
+        results = list(map(lambda x: x[0], results))
+        self.result_cmb.clear()
+        self.result_cmb.addItems(results)
 
     def __read_data(self, file_name) -> pd.DataFrame | None:
         # format = file_name.split('.')[-1]
