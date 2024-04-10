@@ -176,17 +176,33 @@ class MaterialDataBaseWorker:
                                "TEMP_TABLE_CONTAINS_ASPHALTENE.name;\n"
                                )
 
-        cursor = self.cur.execute(
-            "SELECT TEMP_TABLE_DENSITY.name as `Название`, density as `Плотность`,"
-            "pressure as `Давление`, contain as `Содержание 350+`,"
-            f"asphaltene_contain as `Содержание асфальтенов`, result as {result}\n"
-            "FROM TEMP_TABLE_DENSITY\n"
-            "INNER JOIN TEMP_TABLE_RESEARCH ON TEMP_TABLE_DENSITY.name = TEMP_TABLE_RESEARCH.name\n"
-            "INNER JOIN TEMP_TABLE_CONTAINS_350 ON TEMP_TABLE_DENSITY.name = "
-            "TEMP_TABLE_CONTAINS_350.name\n"
-            "INNER JOIN TEMP_TABLE_CONTAINS_ASPHALTENE on TEMP_TABLE_CONTAINS_350.name = "
-            "TEMP_TABLE_CONTAINS_ASPHALTENE.name;"
-        )
+        sql_query = f"""
+            SELECT TEMP_TABLE_DENSITY.name as `Название`, type.type_name as `Тип`, density as `Плотность`,
+            pressure as `Давление`, contain as `Содержание 350+`, asphaltene_contain as `Содержание асфальтенов`,
+            result as {result}
+            FROM TEMP_TABLE_DENSITY
+            INNER JOIN TEMP_TABLE_RESEARCH
+                ON TEMP_TABLE_DENSITY.name = TEMP_TABLE_RESEARCH.name
+            INNER JOIN TEMP_TABLE_CONTAINS_350
+                ON TEMP_TABLE_DENSITY.name = TEMP_TABLE_CONTAINS_350.name
+            INNER JOIN TEMP_TABLE_CONTAINS_ASPHALTENE
+                ON TEMP_TABLE_CONTAINS_350.name = TEMP_TABLE_CONTAINS_ASPHALTENE.name
+            LEFT JOIN raw_material
+                ON raw_material.name = TEMP_TABLE_DENSITY.name
+            LEFT JOIN type
+                ON raw_material.id_type = type.id_type
+        """
+
+        if filter_type != 'Все':
+            sql_query += '\nWHERE type_name = (?);'
+            __params = (filter_type,)
+        else:
+            __params = None
+
+        if __params:
+            cursor = self.cur.execute(sql_query, __params)
+        else:
+            cursor = self.cur.execute(sql_query)
 
         names = [fields[0] for fields in cursor.description]
 

@@ -86,7 +86,8 @@ class DataWidget(QWidget):
 
     def __get_full_dataset(self) -> None:
         result = self.result_cmb.currentText()
-        keys, data = self.math_operator_worker.get_full_dataset(result)
+        type_material = self.type_cmb.currentText()
+        keys, data = self.math_operator_worker.get_full_dataset(type_material, result)
 
         self.table.setRowCount(len(data))
         self.table.setColumnCount(len(data[0]))
