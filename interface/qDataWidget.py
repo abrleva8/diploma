@@ -16,7 +16,11 @@ class DataWidget(QWidget):
         self.setLayout(self.my_layout)
 
         self.math_operator_worker = material_bd.MaterialDataBaseWorker()
-        self.__init_result_combo_box()
+        self.__init_cmbs()
+
+    def __init_cmbs(self):
+        self.__init_result_cmb()
+        self.__init_type_cmb()
 
     def __get_user_layout(self) -> QLayout:
         layout = QHBoxLayout()
@@ -29,28 +33,32 @@ class DataWidget(QWidget):
 
         return layout
 
+    # TODO: убрать self
     def __button_layout(self) -> QLayout:
         layout = QVBoxLayout()
         filter_layout = QFormLayout()
 
+        raw_type_lbl = QLabel('Тип')
+        self.type_cmb = QComboBox(self)
         result_lbl = QLabel('Результат')
         self.result_cmb = QComboBox(self)
-        data_from_base = QPushButton('Загрузить из базы')
-        data_from_file = QPushButton('Загрузить из файла')
-        confirm_data = QPushButton('Подтвердить выбор данных')
-        confirm_data.setObjectName('confirm_data')
-        confirm_data.setEnabled(False)
+        data_from_base_btn = QPushButton('Загрузить из базы')
+        data_from_file_btn = QPushButton('Загрузить из файла')
+        confirm_data_btn = QPushButton('Подтвердить выбор данных')
+        confirm_data_btn.setObjectName('confirm_data')
+        confirm_data_btn.setEnabled(False)
 
-        data_from_base.clicked.connect(self.__get_full_dataset)
-        data_from_file.clicked.connect(self.__open_file_dialog)
-        confirm_data.clicked.connect(self.__confirm_data)
+        data_from_base_btn.clicked.connect(self.__get_full_dataset)
+        data_from_file_btn.clicked.connect(self.__open_file_dialog)
+        confirm_data_btn.clicked.connect(self.__confirm_data)
 
+        filter_layout.addRow(raw_type_lbl, self.type_cmb)
         filter_layout.addRow(result_lbl, self.result_cmb)
 
         layout.addLayout(filter_layout)
-        layout.addWidget(data_from_base)
-        layout.addWidget(data_from_file)
-        layout.addWidget(confirm_data)
+        layout.addWidget(data_from_base_btn)
+        layout.addWidget(data_from_file_btn)
+        layout.addWidget(confirm_data_btn)
 
         layout.setObjectName('layout_buttons')
 
@@ -93,11 +101,18 @@ class DataWidget(QWidget):
     def __confirm_data(self):
         pass
 
-    def __init_result_combo_box(self) -> None:
+    def __init_result_cmb(self) -> None:
         results = self.math_operator_worker.get_results()
         results = list(map(lambda x: x[0], results))
         self.result_cmb.clear()
         self.result_cmb.addItems(results)
+
+    def __init_type_cmb(self):
+        types = self.math_operator_worker.get_types()
+        types = list(map(lambda x: x[0], types))
+        types.append('Все')
+        self.type_cmb.clear()
+        self.type_cmb.addItems(types)
 
     def __read_data(self, file_name) -> pd.DataFrame | None:
         # format = file_name.split('.')[-1]

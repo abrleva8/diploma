@@ -24,6 +24,10 @@ class MaterialDataBaseWorker:
         self.cur.execute("SELECT name FROM property")
         return self.cur.fetchall()
 
+    def get_types(self):
+        self.cur.execute("SELECT type_name FROM type")
+        return self.cur.fetchall()
+
     def insert_property(self, name, unit):
         id_unit = self.get_id_unit(unit)[0][0]
         self.cur.execute("INSERT INTO property(name, id_unit) VALUES (?,?)", (name, id_unit))
@@ -112,7 +116,8 @@ class MaterialDataBaseWorker:
                          f'WHERE parameter_name = (?) AND id_unit = (?)',
                          (new_result_name, new_id_unit, current_result_name, curr_id_unit))
 
-    def edit_property(self, current_property_name: str, current_unit_name: str, new_property_name: str, new_unit_name: str):
+    def edit_property(self, current_property_name: str, current_unit_name: str, new_property_name: str,
+                      new_unit_name: str):
         curr_id_unit = self.get_id_unit(current_unit_name)[0][0]
         new_id_unit = self.get_id_unit(new_unit_name)[0][0]
         self.cur.execute('UPDATE property\n'
@@ -120,8 +125,8 @@ class MaterialDataBaseWorker:
                          f'WHERE name = (?) AND id_unit = (?)',
                          (new_property_name, new_id_unit, current_property_name, curr_id_unit))
 
-    def get_full_dataset(self, result: str):
-
+    # TODO: подумать как это будет выглядеть в общем виде
+    def get_full_dataset(self, filter_type: str, result: str):
         id_result = self.get_result_id_by_result_name(result)[0][0]
 
         self.cur.executescript("DROP TABLE IF EXISTS TEMP_TABLE_DENSITY;\n"
