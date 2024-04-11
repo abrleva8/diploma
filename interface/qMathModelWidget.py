@@ -1,10 +1,11 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractItemView
 
 
 class MathModelWidget(QWidget):
     def __init__(self):
         super(QWidget, self).__init__()
         self.table = QTableWidget(self)
+        self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.layout = self.__get_math_model_layout()
         self.setLayout(self.layout)
 
