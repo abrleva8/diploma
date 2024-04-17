@@ -20,15 +20,18 @@ class ResearcherWidget(QWidget):
         self.tabs.addTab(self.math_model_tab, "Математическая модель")
 
         # Connect events
-        self.child = self.data_tab.my_layout.parentWidget().findChild(QPushButton, 'confirm_data')
-        self.child.clicked.connect(
-            lambda: self.math_model_tab.set_table_widget(self.data_tab.table)
-        )
+        self.child = self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data')
+        self.child.clicked.connect(self.__apply_dataset)
 
         # Add tabs to widget
         self.layout.addWidget(self.tabs)
 
         self.setLayout(self.layout)
+
+    def __apply_dataset(self):
+        self.math_model_tab.set_table_widget(self.data_tab.table)
+        self.math_model_tab.change_header(self.data_tab.table)
+        self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data').setEnabled(False)
 
 
 if __name__ == "__main__":

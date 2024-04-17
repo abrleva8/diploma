@@ -1,7 +1,8 @@
 import pandas as pd
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QLayout, QGridLayout, QHBoxLayout, QPushButton, QTableView, QFileDialog, \
-    QMessageBox, QVBoxLayout, QTableWidgetItem, QTableWidget, QComboBox, QFormLayout, QLabel, QAbstractItemView
+    QMessageBox, QVBoxLayout, QTableWidgetItem, QTableWidget, QComboBox, QFormLayout, QLabel, QAbstractItemView, \
+    QHeaderView
 
 from database import material_bd
 from math_model import PandasModel
@@ -12,8 +13,8 @@ class DataWidget(QWidget):
     def __init__(self):
         super(QWidget, self).__init__()
 
-        self.my_layout = self.__get_user_layout()
-        self.setLayout(self.my_layout)
+        self.layout = self.__get_user_layout()
+        self.setLayout(self.layout)
 
         self.math_operator_worker = material_bd.MaterialDataBaseWorker()
         self.__init_cmbs()
@@ -69,6 +70,7 @@ class DataWidget(QWidget):
 
         self.table = QTableWidget()
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         self.table.setObjectName('table_view')
 
         layout.addWidget(self.table)
@@ -82,7 +84,7 @@ class DataWidget(QWidget):
         if file_name:
             self.__read_data(file_name=file_name)
         else:
-            QMessageBox.warning(self, 'Ошибка', 'Файл не выбран')
+            QMessageBox.warning(self, 'Ошибка', 'Файл не выбран')
 
     def __get_full_dataset(self) -> None:
         result = self.result_cmb.currentText()
@@ -97,7 +99,7 @@ class DataWidget(QWidget):
             for j, val in enumerate(row):
                 self.table.setItem(i, j, QTableWidgetItem(str(val)))
 
-        self.my_layout.parentWidget().findChild(QPushButton, 'confirm_data').setEnabled(True)
+        self.layout.parentWidget().findChild(QPushButton, 'confirm_data').setEnabled(True)
 
     def __confirm_data(self):
         pass
