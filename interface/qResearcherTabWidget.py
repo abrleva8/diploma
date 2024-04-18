@@ -4,7 +4,7 @@ from interface.qDataWidget import DataWidget
 from interface.qMathModelWidget import MathModelWidget
 
 
-class ResearcherWidget(QWidget):
+class ResearcherTabWidget(QWidget):
     def __init__(self, parent):
         super(QWidget, self).__init__(parent)
         self.layout = QVBoxLayout(self)
@@ -39,6 +39,6 @@ if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
-    window = ResearcherWidget()
+    window = ResearcherTabWidget()
     window.show()
     sys.exit(app.exec())

@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog, QHBoxLayout,
 
 import pandas as pd
 
-from interface.qResearcherTabWidget import ResearcherWidget
+from interface.qResearcherTabWidget import ResearcherTabWidget
 from math_model import PandasModel, LinRegression
 from plotting.canvas import Canvas
 
@@ -25,7 +25,7 @@ class ResearcherWindow(QMainWindow):
         #
         # file_menu.addAction(open_QAction)
 
-        self.tab_widget = ResearcherWidget(self)
+        self.tab_widget = ResearcherTabWidget(self)
         self.setCentralWidget(self.tab_widget)
 
         self.__center()

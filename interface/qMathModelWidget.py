@@ -1,11 +1,15 @@
+from PyQt6.QtCore import pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractItemView, QHeaderView, QHBoxLayout
 
 from interface.qModelSelectionWidget import ModelSelectionWidget
 
 
 class MathModelWidget(QWidget):
+    size_sgn = pyqtSignal(int)
+
     def __init__(self):
         super(QWidget, self).__init__()
+        # self.__size = None
         self.table = QTableWidget(self)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -31,6 +35,8 @@ class MathModelWidget(QWidget):
             if header_item:
                 self.table.setHorizontalHeaderItem(col_number, header_item.clone())
 
+        self.model_selection_widget.set_size(num_cols - 3)
+
     def change_header(self, table: QTableWidget):
         num_cols = table.columnCount()
 
@@ -50,9 +56,10 @@ class MathModelWidget(QWidget):
         table_layout = QVBoxLayout()
         methods_layout = QVBoxLayout()
 
-        methods_layout.addWidget(ModelSelectionWidget())
-
         table_layout.addWidget(self.table)
+
+        self.model_selection_widget = ModelSelectionWidget()
+        methods_layout.addWidget(self.model_selection_widget)
 
         layout.addLayout(table_layout)
         layout.addLayout(methods_layout)
