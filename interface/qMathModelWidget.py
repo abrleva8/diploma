@@ -1,4 +1,6 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractItemView, QHeaderView
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractItemView, QHeaderView, QHBoxLayout
+
+from interface.qModelSelectionWidget import ModelSelectionWidget
 
 
 class MathModelWidget(QWidget):
@@ -7,9 +9,8 @@ class MathModelWidget(QWidget):
         self.table = QTableWidget(self)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        self.layout = self.__get_math_model_layout()
+        self.layout = self.__get_layout()
         self.setLayout(self.layout)
-        self.__ready = False
 
     def set_table_widget(self, table: QTableWidget):
         num_rows = table.rowCount()
@@ -43,7 +44,17 @@ class MathModelWidget(QWidget):
             if header_item:
                 self.table.setHorizontalHeaderItem(col_number, header_item.clone())
 
-    def __get_math_model_layout(self):
-        layout = QVBoxLayout()
-        layout.addWidget(self.table)
+    def __get_layout(self):
+        layout = QHBoxLayout()
+
+        table_layout = QVBoxLayout()
+        methods_layout = QVBoxLayout()
+
+        methods_layout.addWidget(ModelSelectionWidget())
+
+        table_layout.addWidget(self.table)
+
+        layout.addLayout(table_layout)
+        layout.addLayout(methods_layout)
+
         return layout
