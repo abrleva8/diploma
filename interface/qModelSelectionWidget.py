@@ -1,12 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QFormLayout, QGridLayout, QComboBox, QCheckBox, QRadioButton, QVBoxLayout, \
     QHBoxLayout, QLabel, QLineEdit, QPushButton, QGroupBox, QButtonGroup
 
-
-def get_linear(size: int) -> str:
-    if not size:
-        size = 3
-    li_res = [f' a{i + 1}*x{i + 1} ' for i in range(size)]
-    return 'y = a0 + ' + '+'.join(li_res)
+from utils.eq_creator import get_linear, get_quad
 
 
 class ModelSelectionWidget(QWidget):
@@ -52,10 +47,13 @@ class ModelSelectionWidget(QWidget):
         text = btn.text()
         match text:
             case 'Линейная':
-                self.result_txt_ed.setText(get_linear(self.__size))
+                self.result_txt_ed.setEnabled(False)
+                self.result_txt_ed.setText(get_linear(self.__size, add_y=True))
             case 'Квадратичная':
-                self.result_txt_ed.setText('y = a*x^2 + b')
+                self.result_txt_ed.setEnabled(False)
+                self.result_txt_ed.setText(get_quad(self.__size, add_y=True))
             case 'Пользовательская':
-                self.result_txt_ed.setText('y = f(x)')
+                self.result_txt_ed.setEnabled(True)
+                self.result_txt_ed.setText('y = ')
             case _:
                 self.result_txt_ed.setText('')
