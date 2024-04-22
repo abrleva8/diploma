@@ -8,9 +8,9 @@ def get_linear(size: int, add_y: bool = False) -> str:
 
 def get_quad(size: int, add_y: bool = False) -> str:
     li_params = [f'x{i + 1}' for i in range(size)]
-    pairs = map(lambda x: f'a{x[0] + size}*{x[1][0]}*{x[1][1]}',
+    pairs = map(lambda x: f'a{x[0] + size + 1}*{x[1][0]}*{x[1][1]}',
                 enumerate((combinations_with_replacement(li_params, 2))))
-    return add_y * 'y = ' + get_linear(3) + '+' + '+'.join(pairs)
+    return add_y * 'y = ' + get_linear(size) + '+' + '+'.join(pairs)
 
 
 def pars_eq(text: str) -> tuple[bool, list[str]]:

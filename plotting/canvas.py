@@ -6,9 +6,9 @@ from matplotlib.figure import Figure
 
 class Canvas(FigureCanvasQTAgg):
 
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
+    def __init__(self, width=5, height=4, dpi=100, size=(1, 1)):
         fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
+        self.axes = fig.add_subplot(1, 1, size)
         super(Canvas, self).__init__(fig)
 
     def plot(self, y_true, y_predict):

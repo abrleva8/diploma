@@ -1,7 +1,22 @@
+import pandas as pd
 from PyQt6.QtCore import pyqtSignal, pyqtSlot
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractItemView, QHeaderView, QHBoxLayout
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractItemView, QHeaderView, QHBoxLayout, QPushButton
 
 from interface.qModelSelectionWidget import ModelSelectionWidget
+from interface.qPlottingWin import PlottingWindow
+
+
+def dataframe_generation_from_table(table):
+    number_of_rows = table.rowCount()
+    number_of_columns = table.columnCount()
+
+    tmp_df = pd.DataFrame(index=range(number_of_rows), columns=range(number_of_columns))
+
+    for i in range(number_of_rows):
+        for j in range(2, number_of_columns):
+            tmp_df.iloc[i, j] = float(table.item(i, j).text())
+
+    return tmp_df
 
 
 class MathModelWidget(QWidget):
@@ -55,13 +70,30 @@ class MathModelWidget(QWidget):
 
         table_layout = QVBoxLayout()
         methods_layout = QVBoxLayout()
+        exploratory_layout = QHBoxLayout()
+
+        self.exploratory_btn = QPushButton('EDA')
+        self.exploratory_btn.clicked.connect(self.__exploratory_btn_clicked)
 
         table_layout.addWidget(self.table)
 
+        exploratory_layout.addWidget(self.exploratory_btn)
+
         self.model_selection_widget = ModelSelectionWidget()
+        self.model_selection_widget.eq_signal.connect(self.__get_eq)
+
         methods_layout.addWidget(self.model_selection_widget)
+        methods_layout.addLayout(exploratory_layout)
 
         layout.addLayout(table_layout)
         layout.addLayout(methods_layout)
 
         return layout
+
+    def __get_eq(self, eq: tuple[bool, list[str]]) -> None:
+        self.eq = eq
+
+    def __exploratory_btn_clicked(self):
+        tmp_df = dataframe_generation_from_table(self.table)
+        self.plotting_win = PlottingWindow(tmp_df, cols=tmp_df.columns)
+        self.plotting_win.show()
