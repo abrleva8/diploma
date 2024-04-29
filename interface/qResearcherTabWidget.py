@@ -1,7 +1,9 @@
+import pandas as pd
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QTabWidget, QPushButton
 
 from interface.qDataWidget import DataWidget
-from interface.qMathModelWidget import MathModelWidget
+from interface.qMathModelWidget import MathModelWidget, dataframe_generation_from_table
+from math_model.data_frame_manager import DataFrameManager
 
 
 class ResearcherTabWidget(QWidget):
@@ -30,6 +32,10 @@ class ResearcherTabWidget(QWidget):
 
     def __apply_dataset(self):
         self.math_model_tab.set_table_widget(self.data_tab.table)
+
+        header_labels = [self.data_tab.table.horizontalHeaderItem(i).text()
+                         for i in range(self.data_tab.table.columnCount())]
+        self.df_manager = DataFrameManager(dataframe_generation_from_table(self.data_tab.table, header_labels))
         self.math_model_tab.change_header(self.data_tab.table)
         self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data').setEnabled(False)
 
@@ -39,6 +45,6 @@ if __name__ == "__main__":
     from PyQt6.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
-    window = ResearcherTabWidget()
+    window = ResearcherTabWidget(parent=None)
     window.show()
     sys.exit(app.exec())

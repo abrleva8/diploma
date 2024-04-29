@@ -1,11 +1,9 @@
 import pandas as pd
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QWidget, QLayout, QGridLayout, QHBoxLayout, QPushButton, QTableView, QFileDialog, \
+from PyQt6.QtWidgets import QWidget, QLayout, QGridLayout, QHBoxLayout, QPushButton, QFileDialog, \
     QMessageBox, QVBoxLayout, QTableWidgetItem, QTableWidget, QComboBox, QFormLayout, QLabel, QAbstractItemView, \
     QHeaderView
 
 from database import material_bd
-from math_model import PandasModel
 
 
 # TODO: переписать через findChild
@@ -18,6 +16,7 @@ class DataWidget(QWidget):
 
         self.math_operator_worker = material_bd.MaterialDataBaseWorker()
         self.__init_cmbs()
+        # self.df_manager: DataFrameManager
 
     def __init_cmbs(self):
         self.__init_result_cmb()
@@ -91,6 +90,8 @@ class DataWidget(QWidget):
         type_material = self.type_cmb.currentText()
         keys, data = self.math_operator_worker.get_full_dataset(type_material, result)
 
+        # self.df_manager = DataFrameManager(pd.DataFrame(data=data, columns=keys))
+
         self.table.setRowCount(len(data))
         self.table.setColumnCount(len(data[0]))
         self.table.setHorizontalHeaderLabels(keys)
@@ -118,22 +119,4 @@ class DataWidget(QWidget):
         self.type_cmb.addItems(types)
 
     def __read_data(self, file_name) -> pd.DataFrame | None:
-        # format = file_name.split('.')[-1]
-        # if format == 'xlsx':
-        #     data = pd.read_excel(file_name)
-        # else:
-        #     data = pd.read_csv(file_name)
-        #
-        # self.data = data
-        # self.model = PandasModel(data)
-        # self.table.setModel(self.model)
-        # # table_layout = self.layout().findChild(QLayout, 'layout_table')
-        # # print(table_layout)
-        # # print(type(table_layout))
-        # # table = table_layout.findChild(QTableView, 'table_view')
-        # # print(table)
-        # # self.layout.wid
-        # # table.setModel(PandasModel(data))
-        # # table_layout.setModel(PandasModel(data))
-        # x = 1
         pass

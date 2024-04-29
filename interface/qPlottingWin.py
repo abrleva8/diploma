@@ -8,6 +8,7 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
+
 # TODO: get real name
 class PlottingWindow(QMainWindow):
     def __init__(self, df: pd.DataFrame, cols: list[str]):
@@ -36,7 +37,7 @@ class PlottingWindow(QMainWindow):
             widget = QMainWindow()
             widget.setCentralWidget(self._canvas)
             widget.addToolBar(
-               NavigationToolbar(self._canvas, self)
+                NavigationToolbar(self._canvas, self)
             )
             sub_window = QMdiSubWindow()
             sub_window.setWidget(widget)
