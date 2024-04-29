@@ -21,6 +21,9 @@ def dataframe_generation_from_table(table, columns: list[str] = None) -> pd.Data
         for j in range(2, number_of_columns):
             tmp_df.iloc[i, j] = float(table.item(i, j).text())
 
+    for j in range(2, number_of_columns):
+        tmp_df = tmp_df.astype({tmp_df.columns[j]: 'float32'})
+
     return tmp_df
 
 
