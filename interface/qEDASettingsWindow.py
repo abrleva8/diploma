@@ -35,6 +35,9 @@ class EDASettingsWindow(QMainWindow):
         self.normal_distrub_cmb_box.addItem('Метод Шапиро-Уилка')
         self.normal_distrub_cmb_box.setEnabled(False)
 
+        corr_analysis_lbl = QLabel("Корреляционный анализ")
+        self.corr_analysis_cbox = QCheckBox()
+
         apply_btn = QPushButton("Применить")
         apply_btn.clicked.connect(self.__apply_btn_clicked)
 
@@ -42,7 +45,10 @@ class EDASettingsWindow(QMainWindow):
         layout.addWidget(self.normal_distrub_cbox, 0, 1)
         layout.addWidget(self.normal_distrub_cmb_box, 0, 2)
 
-        layout.addWidget(apply_btn, 1, 0, 1, 3)
+        layout.addWidget(corr_analysis_lbl, 1, 0)
+        layout.addWidget(self.corr_analysis_cbox, 1, 1)
+
+        layout.addWidget(apply_btn, 2, 0, 1, 3)
 
         return layout
 

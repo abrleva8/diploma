@@ -77,7 +77,6 @@ class MathModelWidget(QWidget):
 
         table_layout = QVBoxLayout()
         analysis_layout = QGridLayout()
-        # exploratory_layout = QHBoxLayout()
 
         eda_label = QLabel('Разведочный анализ')
         analysis_layout.addWidget(eda_label, 0, 0)
@@ -113,7 +112,7 @@ class MathModelWidget(QWidget):
 
     def __exploratory_btn_clicked(self):
         tmp_df = dataframe_generation_from_table(self.table)
-        self.plotting_win = NormalAnalystWindow(tmp_df[tmp_df.columns[-1]])
+        self.plotting_win = NormalAnalystWindow(tmp_df)
         self.plotting_win.show()
 
     def __settings_btn_clicked(self):
