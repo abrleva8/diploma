@@ -1,12 +1,14 @@
 import pandas as pd
 from PyQt6.QtCore import pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractItemView, QHeaderView, QHBoxLayout, \
-    QPushButton, QGridLayout, QLabel
+    QPushButton, QGridLayout, QLabel, QRadioButton, QLineEdit, QButtonGroup
 
+import utils
 from interface.qEDASettingsWindow import EDASettingsWindow
 from interface.qModelSelectionWidget import ModelSelectionWidget
 from interface.qNormalAnalystWindow import NormalAnalystWindow
 from interface.qPlottingWin import PlottingWindow
+from utils.eq_creator import get_linear, get_quad, get_new_x
 
 
 def dataframe_generation_from_table(table, columns: list[str] = None) -> pd.DataFrame:
@@ -32,6 +34,8 @@ class MathModelWidget(QWidget):
 
     def __init__(self):
         super(QWidget, self).__init__()
+        self.model_size = None
+        self.df_manager = None
         self.table = QTableWidget(self)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -57,7 +61,7 @@ class MathModelWidget(QWidget):
             if header_item:
                 self.table.setHorizontalHeaderItem(col_number, header_item.clone())
 
-        self.model_selection_widget.set_size(num_cols - 3)
+        self.model_size = num_cols - 3
 
     def change_header(self, table: QTableWidget):
         num_cols = table.columnCount()
@@ -92,10 +96,34 @@ class MathModelWidget(QWidget):
 
         analysis_layout.addWidget(self.exploratory_btn, 2, 0)
 
-        self.model_selection_widget = ModelSelectionWidget()
-        self.model_selection_widget.eq_signal.connect(self.__get_eq)
+        self.model_btn_gp = QButtonGroup()
+        self.model_btn_gp.setObjectName('model_btn_gp')
 
-        analysis_layout.addWidget(self.model_selection_widget, 3, 0)
+        model_lbl = QLabel('Модель: ')
+
+        linear_rb = QRadioButton('Линейная')
+        quad_rb = QRadioButton('Квадратичная')
+        user_rb = QRadioButton('Пользовательская')
+        self.model_btn_gp.addButton(linear_rb, 1)
+        self.model_btn_gp.addButton(quad_rb, 2)
+        self.model_btn_gp.addButton(user_rb, 3)
+        self.model_btn_gp.buttonClicked.connect(self.__set_result_txt_ed)
+        self.result_txt_ed = QLineEdit()
+        self.result_txt_ed.setEnabled(False)
+        apply_text_btn = QPushButton('Применить')
+        apply_text_btn.clicked.connect(self.__apply_btn_clicked)
+
+        analysis_layout.addWidget(model_lbl, 3, 0)
+        analysis_layout.addWidget(linear_rb, 4, 0)
+        analysis_layout.addWidget(quad_rb, 5, 0)
+        analysis_layout.addWidget(user_rb, 6, 0)
+        analysis_layout.addWidget(self.result_txt_ed, 7, 0)
+        analysis_layout.addWidget(apply_text_btn, 8, 0)
+
+        # self.model_selection_widget = ModelSelectionWidget(self.df_manager)
+        # self.model_selection_widget.eq_signal.connect(self.__get_eq)
+        #
+        # analysis_layout.addWidget(self.model_selection_widget, 3, 0)
 
         layout.addLayout(table_layout)
         layout.addLayout(analysis_layout)
@@ -105,14 +133,8 @@ class MathModelWidget(QWidget):
     def __get_eq(self, eq: tuple[bool, list[str]]) -> None:
         self.eq = eq
 
-    # def __exploratory_btn_clicked(self):
-    #     tmp_df = dataframe_generation_from_table(self.table)
-    #     self.plotting_win = PlottingWindow(tmp_df, cols=tmp_df.columns)
-    #     self.plotting_win.show()
-
     def __exploratory_btn_clicked(self):
-        tmp_df = dataframe_generation_from_table(self.table)
-        self.plotting_win = NormalAnalystWindow(tmp_df)
+        self.plotting_win = NormalAnalystWindow(self.df_manager.df)
         self.plotting_win.show()
 
     def __settings_btn_clicked(self):
@@ -123,6 +145,28 @@ class MathModelWidget(QWidget):
     def __eda_set_signal(self, is_normal_check, check_method):
         self.__is_normal_check = is_normal_check
         self.__check_method = check_method
+
+    def __set_result_txt_ed(self, btn: QRadioButton) -> None:
+        text = btn.text()
+        match text:
+            case 'Линейная':
+                self.result_txt_ed.setEnabled(False)
+                self.result_txt_ed.setText(get_linear(self.model_size, add_y=True))
+            case 'Квадратичная':
+                self.result_txt_ed.setEnabled(False)
+                self.result_txt_ed.setText(get_quad(self.model_size, add_y=True))
+            case 'Пользовательская':
+                self.result_txt_ed.setEnabled(True)
+                self.result_txt_ed.setText('y = ')
+            case _:
+                self.result_txt_ed.setText('')
+
+    def __apply_btn_clicked(self):
+        import pingouin as pg
+        # eq = utils.eq_creator.pars_eq(self.result_txt_ed.text())
+        new_X = get_new_x(self.df_manager.df, self.result_txt_ed.text())
+        result = pg.linear_regression(new_X, self.df_manager.df[self.df_manager.df.columns[-1]])
+        return result
 
 
 if __name__ == "__main__":

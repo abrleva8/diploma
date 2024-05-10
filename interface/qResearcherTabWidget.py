@@ -32,11 +32,11 @@ class ResearcherTabWidget(QWidget):
 
     def __apply_dataset(self):
         self.math_model_tab.set_table_widget(self.data_tab.table)
-
+        self.math_model_tab.change_header(self.data_tab.table)
         header_labels = [self.data_tab.table.horizontalHeaderItem(i).text()
                          for i in range(self.data_tab.table.columnCount())]
-        self.df_manager = DataFrameManager(dataframe_generation_from_table(self.data_tab.table, header_labels))
-        self.math_model_tab.change_header(self.data_tab.table)
+        self.math_model_tab.df_manager = DataFrameManager(dataframe_generation_from_table(self.data_tab.table,
+                                                                                          header_labels))
         self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data').setEnabled(False)
 
 

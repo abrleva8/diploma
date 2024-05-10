@@ -1,5 +1,7 @@
 from itertools import combinations_with_replacement
 
+import pandas as pd
+
 
 def get_linear(size: int, add_y: bool = False) -> str:
     li_res = [f'a{i + 1}*x{i + 1}' for i in range(size)]
@@ -21,3 +23,32 @@ def pars_eq(text: str) -> tuple[bool, list[str]]:
     params = [el for el in params if 'x' in el]
     params = list(map(lambda x: '*'.join(x.split('*')[1:]), params))
     return fit_intercept, params
+
+
+def drop_a(mult: str) -> str:
+    ind = mult.find('*')
+    if ind != -1:
+        mult = mult[ind + 1:]
+    else:
+        mult = ''
+    return mult
+
+
+def get_new_x(df: pd.DataFrame, text: str) -> pd.DataFrame:
+    new_columns = df.columns[2:].str.split(', ')
+    d = {}
+    for column in new_columns:
+        d[column[1]] = column[0] + ', ' + column[1]
+
+    new_keys = list(map(drop_a, text.split('+')))
+    new_keys = list(filter(lambda x: True if x else False, new_keys))
+
+    new_X = pd.DataFrame()
+    for key in new_keys:
+        if d.get(key, None) in df.columns:
+            new_X[key] = df[d[key]]
+        else:
+            x = key.split('*')
+            new_X[key] = new_X[x[0]] * new_X[x[1]]
+
+    return new_X

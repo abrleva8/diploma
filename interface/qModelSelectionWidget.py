@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QWidget, QFormLayout, QGridLayout, QComboBox, QCheck
     QHBoxLayout, QLabel, QLineEdit, QPushButton, QGroupBox, QButtonGroup, QMessageBox
 
 import utils.eq_creator
-from utils.eq_creator import get_linear, get_quad
+from utils.eq_creator import get_linear, get_quad, get_new_x
 
 
 class ModelSelectionWidget(QWidget):
@@ -36,15 +36,15 @@ class ModelSelectionWidget(QWidget):
         self.model_btn_gp.buttonClicked.connect(self.__set_result_txt_ed)
         self.result_txt_ed = QLineEdit()
         self.result_txt_ed.setEnabled(False)
-        apply_btn = QPushButton('Применить')
-        apply_btn.clicked.connect(self.__apply_btn_clicked)
+        apply_text_btn = QPushButton('Применить')
+        apply_text_btn.clicked.connect(self.__apply_btn_clicked)
 
         layout.addWidget(model_lbl, 0, 0)
         layout.addWidget(linear_rb, 1, 0)
         layout.addWidget(quad_rb, 2, 0)
         layout.addWidget(user_rb, 3, 0)
         layout.addWidget(self.result_txt_ed, 4, 0)
-        layout.addWidget(apply_btn, 5, 0)
+        layout.addWidget(apply_text_btn, 5, 0)
 
         return layout
 
@@ -52,19 +52,6 @@ class ModelSelectionWidget(QWidget):
     def __apply_btn_clicked(self):
         eq = utils.eq_creator.pars_eq(self.result_txt_ed.text())
         self.eq_signal.emit(eq)
-        return eq
+        df = get_new_x(self.df_manager.df, self.result_txt_ed.text())
+        return df
 
-    def __set_result_txt_ed(self, btn: QRadioButton) -> None:
-        text = btn.text()
-        match text:
-            case 'Линейная':
-                self.result_txt_ed.setEnabled(False)
-                self.result_txt_ed.setText(get_linear(self.__size, add_y=True))
-            case 'Квадратичная':
-                self.result_txt_ed.setEnabled(False)
-                self.result_txt_ed.setText(get_quad(self.__size, add_y=True))
-            case 'Пользовательская':
-                self.result_txt_ed.setEnabled(True)
-                self.result_txt_ed.setText('y = ')
-            case _:
-                self.result_txt_ed.setText('')

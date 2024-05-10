@@ -32,6 +32,7 @@ class NormalAnalystWindow(QMainWindow):
         self._ax_2 = self._canvas_2.figure.subplots()
 
         X = df.iloc[:, 2:-1]
+        df.to_csv("fragment.csv", sep=",", index=False)
         y = df[df.columns[-1]]
 
         if y.shape[0] == 0:
@@ -60,7 +61,10 @@ class NormalAnalystWindow(QMainWindow):
         #                                ' and the y-coordinate = ' + format(y, '1.4f')
 
         # self._ax_2.heatmap(X.corr())
-        sns.heatmap(X.corr(), ax=self._ax_2, annot=True)
+        corr = X.corr()
+        sns.heatmap(corr, ax=self._ax_2, annot=True)
+
+        # corr.style.background_gradient(cmap='coolwarm', axis=self._ax_2)
 
         widget = QMainWindow()
         widget_2 = QMainWindow()
