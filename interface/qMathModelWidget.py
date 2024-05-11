@@ -1,13 +1,10 @@
 import pandas as pd
-from PyQt6.QtCore import pyqtSignal, pyqtSlot
+from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractItemView, QHeaderView, QHBoxLayout, \
     QPushButton, QGridLayout, QLabel, QRadioButton, QLineEdit, QButtonGroup
 
-import utils
 from interface.qEDASettingsWindow import EDASettingsWindow
-from interface.qModelSelectionWidget import ModelSelectionWidget
 from interface.qNormalAnalystWindow import NormalAnalystWindow
-from interface.qPlottingWin import PlottingWindow
 from utils.eq_creator import get_linear, get_quad, get_new_x
 
 
@@ -30,7 +27,8 @@ def dataframe_generation_from_table(table, columns: list[str] = None) -> pd.Data
 
 
 class MathModelWidget(QWidget):
-    size_sgn = pyqtSignal(int)
+
+    table_sgn = pyqtSignal(QTableWidget)
 
     def __init__(self):
         super(QWidget, self).__init__()
@@ -110,20 +108,15 @@ class MathModelWidget(QWidget):
         self.model_btn_gp.buttonClicked.connect(self.__set_result_txt_ed)
         self.result_txt_ed = QLineEdit()
         self.result_txt_ed.setEnabled(False)
-        apply_text_btn = QPushButton('Применить')
-        apply_text_btn.clicked.connect(self.__apply_btn_clicked)
+        self.apply_text_btn = QPushButton('Применить')
+        self.apply_text_btn.clicked.connect(self.__apply_btn_clicked)
 
         analysis_layout.addWidget(model_lbl, 3, 0)
         analysis_layout.addWidget(linear_rb, 4, 0)
         analysis_layout.addWidget(quad_rb, 5, 0)
         analysis_layout.addWidget(user_rb, 6, 0)
         analysis_layout.addWidget(self.result_txt_ed, 7, 0)
-        analysis_layout.addWidget(apply_text_btn, 8, 0)
-
-        # self.model_selection_widget = ModelSelectionWidget(self.df_manager)
-        # self.model_selection_widget.eq_signal.connect(self.__get_eq)
-        #
-        # analysis_layout.addWidget(self.model_selection_widget, 3, 0)
+        analysis_layout.addWidget(self.apply_text_btn, 8, 0)
 
         layout.addLayout(table_layout)
         layout.addLayout(analysis_layout)
@@ -163,10 +156,13 @@ class MathModelWidget(QWidget):
 
     def __apply_btn_clicked(self):
         import pingouin as pg
-        # eq = utils.eq_creator.pars_eq(self.result_txt_ed.text())
         new_X = get_new_x(self.df_manager.df, self.result_txt_ed.text())
-        result = pg.linear_regression(new_X, self.df_manager.df[self.df_manager.df.columns[-1]])
-        return result
+        self.result = pg.linear_regression(new_X, self.df_manager.df[self.df_manager.df.columns[-1]])
+
+        # self.table_sgn.emit(result)
+        # self.layout.parentWidget().findChild(QPushButton, 'confirm_data').setEnabled(False)
+
+        return self.result
 
 
 if __name__ == "__main__":
