@@ -4,24 +4,32 @@ import sqlite3
 
 class MaterialDataBaseWorker:
     def __init__(self):
-        self.conn = sqlite3.connect(r"C:\Users\Ilia\PycharmProjects\diploma\data\materials.db")
-        # self.conn = sqlite3.connect(r"../data/materials.db")
+        # path = os.path.join(os.getcwd(), 'data', 'materials.db')
+        path = r'C:\Users\Ilia\PycharmProjects\diploma\data\materials.db'
+        self.conn = sqlite3.connect(path)
         self.cur = self.conn.cursor()
 
     def __del__(self):
-        self.conn.commit()
-        self.cur.close()
-        self.conn.close()
+        try:
+            self.conn.commit()
+            self.cur.close()
+            self.conn.close()
+        except AttributeError:
+            pass
 
     def get_materials(self):
         self.cur.execute("SELECT name FROM raw_material")
+        return self.cur.fetchall()
+
+    def get_material_types(self):
+        self.cur.execute("SELECT type_name FROM type")
         return self.cur.fetchall()
 
     def insert_material(self, name: str):
         self.cur.execute("INSERT INTO raw_material(name) VALUES (?)", (name,))
         self.conn.commit()
 
-    def get_properties(self):
+    def get_properties(self) -> list[tuple[str, ]]:
         self.cur.execute("SELECT name FROM property")
         return self.cur.fetchall()
 
@@ -53,6 +61,10 @@ class MaterialDataBaseWorker:
         self.cur.execute("INSERT INTO unit(denote) VALUES (?)", (unit_denote,))
         self.conn.commit()
 
+    def insert_type(self, type_name: str) -> None:
+        self.cur.execute("INSERT INTO type(type_name) VALUES (?)", (type_name,))
+        self.conn.commit()
+
     def get_unit_by_property_name(self, property_name):
         self.cur.execute("SELECT denote\n"
                          "FROM unit\n"
@@ -76,6 +88,10 @@ class MaterialDataBaseWorker:
     def get_units(self):
         self.cur.execute("SELECT denote FROM unit")
         return self.cur.fetchall()
+
+    def delete_type(self, type_name: str) -> None:
+        self.cur.execute("DELETE FROM type WHERE type_name = (?)", (type_name,))
+        self.conn.commit()
 
     def delete_material(self, name):
         self.cur.execute("DELETE FROM raw_material WHERE name = (?)", (name,))
@@ -107,6 +123,10 @@ class MaterialDataBaseWorker:
 
     def edit_unit(self, curr_unit_denote: str, new_unit_denote: str):
         self.cur.execute(f"UPDATE unit SET denote = (?) WHERE denote = (?)", (new_unit_denote, curr_unit_denote))
+        self.conn.commit()
+
+    def edit_type(self, curr_type_name: str, new_type_name: str) -> None:
+        self.cur.execute(f"UPDATE type SET type_name = (?) WHERE type_name = (?)", (new_type_name, curr_type_name))
         self.conn.commit()
 
     def edit_result(self, current_result_name: str, current_unit_name: str, new_result_name: str, new_unit_name: str):

@@ -1,6 +1,7 @@
 import pandas as pd
-from PyQt6.QtWidgets import QWidget, QLayout, QHBoxLayout, QTableWidget, QHeaderView, QAbstractItemView, QTableView, \
-    QTableWidgetItem
+
+from PyQt6.QtWidgets import QWidget, QLayout, QTableWidget, QHeaderView, QAbstractItemView, QTableWidgetItem, \
+    QGridLayout, QVBoxLayout, QHBoxLayout, QLabel
 
 
 class MathModelResultWidget(QWidget):
@@ -8,12 +9,13 @@ class MathModelResultWidget(QWidget):
     def __init__(self):
         super(QWidget, self).__init__()
 
-        # self.mathModelWidget = mathModelWidget
-        # self.mathModelWidget.connect(self.__set_result)
-
         self.table = QTableWidget(self)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+
+        self.fisher_lbl = QLabel()
+        self.fisher_table_lbl = QLabel()
+        self.fisher_result_lbl = QLabel()
 
         self.layout = self.__get_layout()
         self.setLayout(self.layout)
@@ -31,9 +33,36 @@ class MathModelResultWidget(QWidget):
             for j in range(self.table.columnCount()):
                 self.table.setItem(i, j, QTableWidgetItem(str(row[j])))
 
+    def set_fisher_info(self, fisher: float, fisher_table: float) -> None:
+
+        fisher = round(fisher, 2)
+        fisher_table = round(fisher_table, 2)
+
+        self.fisher_lbl.setText(f'Значения критерия Фишера равно = {fisher}')
+        self.fisher_table_lbl.setText(f'Табличное значение критерия Фишера равно = {fisher_table}')
+
+        if fisher > fisher_table:
+            self.fisher_result_lbl.setText('Критерий Фишера выполняется!')
+            self.fisher_result_lbl.setStyleSheet('color: green;')
+        else:
+            self.fisher_result_lbl.setText('Критерий Фишера не выполняется!')
+            self.fisher_result_lbl.setStyleSheet('color: red;')
+
     def __get_layout(self) -> QLayout:
         layout = QHBoxLayout()
-        layout.addWidget(self.table)
+
+        table_layout = QGridLayout()
+        info_layout = QVBoxLayout()
+
+        table_layout.addWidget(self.table, 0, 0)
+
+        info_layout.addWidget(self.fisher_lbl)
+        info_layout.addWidget(self.fisher_table_lbl)
+        info_layout.addWidget(self.fisher_result_lbl)
+
+        layout.addLayout(table_layout)
+        layout.addLayout(info_layout)
+
         return layout
 
 

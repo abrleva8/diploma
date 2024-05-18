@@ -45,6 +45,7 @@ class ResearcherTabWidget(QWidget):
 
     def __apply_result(self):
         self.math_model_result.set_table_widget(self.math_model_tab.result)
+        self.math_model_result.set_fisher_info(self.math_model_tab.fisher, self.math_model_tab.fisher_table)
 
 
 if __name__ == "__main__":

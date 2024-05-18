@@ -1,12 +1,12 @@
 from sqlite3 import IntegrityError
 
-from PyQt6.QtWidgets import QWidget, QMainWindow, QGridLayout, QLabel, QApplication, QLineEdit, QComboBox, QPushButton, \
-    QMessageBox
+from PyQt6.QtWidgets import QWidget, QMainWindow, QGridLayout, QLabel, QApplication, QLineEdit, QComboBox, \
+    QPushButton, QMessageBox
 
 from database import admin_bd
 
 
-class AddWindow(QMainWindow):
+class AddUserWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Добавить пользователя")
@@ -16,8 +16,6 @@ class AddWindow(QMainWindow):
         main_widget = QWidget()
         main_widget.setLayout(layout)
         self.setCentralWidget(main_widget)
-
-        self._center()
 
         self.math_operator_worker = admin_bd.UserDataBaseWorker()
         self._init_type_combobox()
@@ -55,9 +53,6 @@ class AddWindow(QMainWindow):
 
         return layout
 
-    def _center(self):
-        pass
-
     def _input_add_new_user_changed(self):
         self.add_button.setEnabled(bool(self.user_input.text() and self.password_input.text()
                                         and self.type_combobox.currentText()))
@@ -82,6 +77,6 @@ if __name__ == "__main__":
     import sys
 
     app = QApplication(sys.argv)
-    window = AddWindow()
+    window = AddUserWindow()
     window.show()
     sys.exit(app.exec())

@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QWidget, QComboBox, QLayout, QGridLayout, QLineEdit,
 
 from database import admin_bd
 from interface.qAddWindows import qAddUserWindow
+from interface.qAddWindows.qAddUserWindow import AddUserWindow
 
 
 class UserWidget(QWidget):

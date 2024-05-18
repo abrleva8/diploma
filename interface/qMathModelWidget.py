@@ -1,10 +1,16 @@
 import pandas as pd
+import pingouin as pg
+
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractItemView, QHeaderView, QHBoxLayout, \
     QPushButton, QGridLayout, QLabel, QRadioButton, QLineEdit, QButtonGroup
+from scipy import stats
+
+from sklearn.linear_model import LinearRegression
 
 from interface.qEDASettingsWindow import EDASettingsWindow
 from interface.qNormalAnalystWindow import NormalAnalystWindow
+from math_model.data_frame_manager import DataFrameManager
 from utils.eq_creator import get_linear, get_quad, get_new_x
 
 
@@ -33,7 +39,7 @@ class MathModelWidget(QWidget):
     def __init__(self):
         super(QWidget, self).__init__()
         self.model_size = None
-        self.df_manager = None
+        self.df_manager: DataFrameManager = None
         self.table = QTableWidget(self)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
@@ -155,14 +161,28 @@ class MathModelWidget(QWidget):
                 self.result_txt_ed.setText('')
 
     def __apply_btn_clicked(self):
-        import pingouin as pg
+
         new_X = get_new_x(self.df_manager.df, self.result_txt_ed.text())
         self.result = pg.linear_regression(new_X, self.df_manager.df[self.df_manager.df.columns[-1]])
 
-        # self.table_sgn.emit(result)
-        # self.layout.parentWidget().findChild(QPushButton, 'confirm_data').setEnabled(False)
+        # TODO: create a class for the next code lines
+        y = self.df_manager.get_y()
 
-        return self.result
+        lr = LinearRegression()
+        lr.fit(new_X, y)
+        y_pred = lr.predict(new_X)
+
+        pearson_corr = stats.pearsonr(y, y_pred)
+        corr = pearson_corr.statistic
+
+        f1 = len(lr.coef_)
+        f2 = len(y) - f1 - 1
+
+        dfn = min(f1, f2)
+        dfd = max(f1, f2)
+
+        self.fisher = corr ** 2 / (1 - corr ** 2) * (dfn / dfd)
+        self.fisher_table = stats.f.ppf(q=0.95, dfn=dfn, dfd=dfd)
 
 
 if __name__ == "__main__":
