@@ -6,13 +6,14 @@ from PyQt6.QtWidgets import QWidget, QMainWindow, QGridLayout, QLabel, QApplicat
 from database import material_bd
 
 
-class AddMaterialWindow(QMainWindow):
-    def __init__(self):
+class EditMaterialWindow(QMainWindow):
+    def __init__(self, curr_material_name: str):
         super().__init__()
-        self.setWindowTitle("Добавить материал")
+        self.setWindowTitle(f"Изменение {curr_material_name}")
 
         self.math_operator_worker = material_bd.MaterialDataBaseWorker()
         self.properties = None
+        self.__curr_material_name = curr_material_name
 
         self.layout = self._get_layout()
 
@@ -21,24 +22,25 @@ class AddMaterialWindow(QMainWindow):
         self.setCentralWidget(main_widget)
 
         self.__init_material_types_cmbox()
+        self.__init_values()
 
     def _get_layout(self):
         layout = QGridLayout()
 
-        self.material_lbl = QLabel("Введите название")
+        self.material_lbl = QLabel("Введите новое название")
 
         self.material_input = QLineEdit("")
-        self.material_input.setPlaceholderText('Название материала')
+        self.material_input.setPlaceholderText('Новое название')
         self.material_input.textChanged.connect(self.__input_add_new_material_changed)
 
-        self.material_type_lbl = QLabel("Выберите тип")
+        self.material_type_lbl = QLabel("Выберите новый тип")
 
         self.material_type_cmbox = QComboBox()
 
-        self.apply_button = QPushButton()
-        self.apply_button.setText("Добавить материал")
+        self.apply_button = QPushButton('Изменить материал')
         self.apply_button.setEnabled(False)
-        self.apply_button.clicked.connect(self.__add_button_clicked)
+
+        self.apply_button.clicked.connect(self.__edit_button_clicked)
 
         layout.addWidget(self.material_lbl, 0, 0)
         layout.addWidget(self.material_input, 0, 1)
@@ -54,34 +56,24 @@ class AddMaterialWindow(QMainWindow):
     def __input_add_new_material_changed(self):
         self.apply_button.setEnabled(bool(self.material_input.text()))
 
-    def __add_button_clicked(self):
-        math_operator_worker = material_bd.MaterialDataBaseWorker()
-
+    def __edit_button_clicked(self):
         try:
-            type_id = math_operator_worker.get_type_id_by_type_name(self.material_type_cmbox.currentText())[0][0]
+            self.math_operator_worker.edit_material(self.__curr_material_name, self.material_input.text(),
+                                                    self.material_type_cmbox.currentText())
         except IntegrityError as e:
-            QMessageBox.critical(self, "Ошибка", "Произошла ошибка при получении id типа материала")
+            QMessageBox.critical(self, "Ошибка", "Произошла ошибка при изменении материала")
             return
-
-        try:
-            math_operator_worker.insert_material(self.material_input.text(), type_id)
-        except IntegrityError as e:
-            QMessageBox.critical(self, "Ошибка", "Произошла ошибка при добавлении материала")
-            return
-
-        material_id = math_operator_worker.get_id_material_by_material_name(self.material_input.text())[0][0]
-
         try:
             for proper in self.properties:
                 proper_name = self.layout.parentWidget().findChild(QLabel, proper).text()
-                proper_id = self.math_operator_worker.get_id_property_by_property_name(proper_name)[0][0]
                 proper_value = self.layout.parentWidget().findChild(QDoubleSpinBox, f'{proper}_spinbox').value()
-                self.math_operator_worker.insert_raw_material_property(material_id, proper_id, proper_value)
+                self.math_operator_worker.edit_raw_material_property(self.material_input.text(),
+                                                                     proper_name, proper_value)
         except IntegrityError as e:
-            QMessageBox.critical(self, "Ошибка", "Произошла ошибка при добавлении значений свойств")
+            QMessageBox.critical(self, "Ошибка", "Произошла ошибка при изменении значений свойств")
             return
 
-        QMessageBox.information(self, "Успех", "Материал успешно добавлен")
+        QMessageBox.information(self, "Успех", "Материал успешно изменен")
 
     def set_labels(self, layout: QGridLayout):
         if self.properties is None:
@@ -91,10 +83,24 @@ class AddMaterialWindow(QMainWindow):
         for index, proper in enumerate(self.properties):
             q_label = QLabel(proper)
             q_label.setObjectName(proper)
-            layout.addWidget(q_label, index + 2, 0)
+
             spin_box = QDoubleSpinBox()
             spin_box.setObjectName(f'{proper}_spinbox')
+
+            layout.addWidget(q_label, index + 2, 0)
             layout.addWidget(spin_box, index + 2, 1)
+
+    def __init_values(self):
+        type_name = self.math_operator_worker.get_type_id_by_material_name(self.__curr_material_name)[0][0]
+        self.material_type_cmbox.setCurrentText(type_name)
+
+        name_value_lst = self.math_operator_worker.get_name_and_value_by_material_name(self.__curr_material_name)
+        self.set_properties(name_value_lst)
+
+    def set_properties(self, name_value_lst: list[tuple[str, float]]):
+        for index, (name, value) in enumerate(name_value_lst):
+            self.layout.parentWidget().findChild(QLabel, name).setText(name)
+            self.layout.parentWidget().findChild(QDoubleSpinBox, f'{name}_spinbox').setValue(value)
 
     def __init_material_types_cmbox(self):
         material_types = self.math_operator_worker.get_material_types()
@@ -107,6 +113,6 @@ if __name__ == "__main__":
     import sys
 
     app = QApplication(sys.argv)
-    window = AddMaterialWindow()
+    window = EditMaterialWindow('Тест')
     window.show()
     sys.exit(app.exec())

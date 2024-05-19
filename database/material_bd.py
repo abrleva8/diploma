@@ -25,11 +25,11 @@ class MaterialDataBaseWorker:
         self.cur.execute("SELECT type_name FROM type")
         return self.cur.fetchall()
 
-    def insert_material(self, name: str):
-        self.cur.execute("INSERT INTO raw_material(name) VALUES (?)", (name,))
+    def insert_material(self, material_name: str, type_id: int):
+        self.cur.execute("INSERT INTO raw_material(name, id_type) VALUES (?, ?)", (material_name, type_id))
         self.conn.commit()
 
-    def get_properties(self) -> list[tuple[str, ]]:
+    def get_properties(self) -> list[tuple[str,]]:
         self.cur.execute("SELECT name FROM property")
         return self.cur.fetchall()
 
@@ -65,6 +65,11 @@ class MaterialDataBaseWorker:
         self.cur.execute("INSERT INTO type(type_name) VALUES (?)", (type_name,))
         self.conn.commit()
 
+    def insert_raw_material_property(self, id_raw_material: int, id_property: int, value: float) -> None:
+        self.cur.execute("INSERT INTO raw_material_property(id_raw_material, id_property, value) VALUES (?, ?, ?)",
+                         (id_raw_material, id_property, value))
+        self.conn.commit()
+
     def get_unit_by_property_name(self, property_name):
         self.cur.execute("SELECT denote\n"
                          "FROM unit\n"
@@ -79,6 +84,31 @@ class MaterialDataBaseWorker:
                          "WHERE result.parameter_name = (?);", (result_name,))
         return self.cur.fetchall()
 
+    def get_type_id_by_type_name(self, type_name: str) -> list[tuple[int,]]:
+        self.cur.execute("SELECT id_type\n"
+                         "FROM type\n"
+                         "WHERE type.type_name = (?);", (type_name,))
+        return self.cur.fetchall()
+
+    def get_type_id_by_material_name(self, material_name: str) -> list[tuple[int,]]:
+        self.cur.execute("SELECT type_name\n"
+                         "FROM raw_material\n"
+                         "INNER JOIN type ON raw_material.id_type = type.id_type\n"
+                         "WHERE name = (?);", (material_name,))
+        return self.cur.fetchall()
+
+    def get_id_material_by_material_name(self, material_name):
+        self.cur.execute("SELECT id_raw_material\n"
+                         "FROM raw_material\n"
+                         "WHERE raw_material.name = (?);", (material_name,))
+        return self.cur.fetchall()
+
+    def get_id_property_by_property_name(self, property_name):
+        self.cur.execute("SELECT id_property\n"
+                         "FROM property\n"
+                         "WHERE property.name = (?);", (property_name,))
+        return self.cur.fetchall()
+
     def get_result_id_by_result_name(self, result_name):
         self.cur.execute("SELECT id_result\n"
                          "FROM result\n"
@@ -89,12 +119,28 @@ class MaterialDataBaseWorker:
         self.cur.execute("SELECT denote FROM unit")
         return self.cur.fetchall()
 
+    def get_name_and_value_by_material_name(self, material_name: str) -> list[tuple[str, float]]:
+        self.cur.execute("SELECT property.name, value\n"
+                         "FROM raw_material_property\n"
+                         "INNER JOIN property ON raw_material_property.id_property = property.id_property\n"
+                         "INNER JOIN raw_material ON raw_material_property.id_raw_material = "
+                         "raw_material.id_raw_material\n"
+                         "WHERE raw_material.name = (?);", (material_name,))
+        return self.cur.fetchall()
+
     def delete_type(self, type_name: str) -> None:
         self.cur.execute("DELETE FROM type WHERE type_name = (?)", (type_name,))
         self.conn.commit()
 
-    def delete_material(self, name):
-        self.cur.execute("DELETE FROM raw_material WHERE name = (?)", (name,))
+    def delete_material(self, material_name: str) -> None:
+        self.cur.execute("DELETE\n"
+                         "FROM raw_material_property\n"
+                         "WHERE id_raw_material = (\n"
+                         "SELECT id_raw_material\n"
+                         "FROM raw_material\n"
+                         "WHERE name = (?)\n"
+                         ");", (material_name,))
+        self.cur.execute("DELETE FROM raw_material WHERE name = (?)", (material_name,))
         self.conn.commit()
 
     def delete_property(self, name):
@@ -123,6 +169,31 @@ class MaterialDataBaseWorker:
 
     def edit_unit(self, curr_unit_denote: str, new_unit_denote: str):
         self.cur.execute(f"UPDATE unit SET denote = (?) WHERE denote = (?)", (new_unit_denote, curr_unit_denote))
+        self.conn.commit()
+
+    def edit_material(self, curr_material_name: str, new_material_name: str, new_type_name: str) -> None:
+        self.cur.execute("UPDATE raw_material\n"
+                         "SET name = (?), id_type = (\n"
+                         "SELECT id_type\n"
+                         "FROM type\n"
+                         "WHERE type_name = (?)\n"
+                         ")\n"
+                         "WHERE name = (?);", (new_material_name, new_type_name, curr_material_name))
+        self.conn.commit()
+
+    def edit_raw_material_property(self, material_name: str, property_name: str, new_value: float) -> None:
+        self.cur.execute("UPDATE raw_material_property\n"
+                         "SET value = (?)\n"
+                         "WHERE id_raw_material = (\n"
+                         "SELECT id_raw_material\n"
+                         "FROM raw_material\n"
+                         "WHERE name = (?)\n"
+                         ")\n"
+                         "AND\n"
+                         "id_property = (\n"
+                         "SELECT id_property\n"
+                         "FROM property\n"
+                         "WHERE name = (?))", (new_value, material_name, property_name))
         self.conn.commit()
 
     def edit_type(self, curr_type_name: str, new_type_name: str) -> None:

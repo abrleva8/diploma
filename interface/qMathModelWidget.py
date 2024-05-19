@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractItemVie
 from scipy import stats
 
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
 from interface.qEDASettingsWindow import EDASettingsWindow
 from interface.qNormalAnalystWindow import NormalAnalystWindow
@@ -183,6 +184,8 @@ class MathModelWidget(QWidget):
 
         self.fisher = corr ** 2 / (1 - corr ** 2) * (dfn / dfd)
         self.fisher_table = stats.f.ppf(q=0.95, dfn=dfn, dfd=dfd)
+        self.r2 = lr.score(new_X, y)
+        self.mse = mean_squared_error(y, y_pred)
 
 
 if __name__ == "__main__":

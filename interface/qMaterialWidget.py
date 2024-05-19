@@ -1,11 +1,12 @@
+from PyQt6 import QtCore
 from PyQt6.QtCore import QStringListModel
 from PyQt6.QtWidgets import QWidget, QGridLayout, QLabel, QComboBox, QPushButton, QMessageBox
 
 from database import material_bd
-from interface import qEditWindows
-from interface.qEditWindows import qEditUnitWindow, qEditPropertyWindow, qEditResultWindow, qEditTypeWindow
 from interface.qAddWindows import qAddResultWindow, qAddPropertyWindow, qAddMaterialWindow, qAddConditionWindow, \
     qAddUnitWindow, qAddTypeWindow
+from interface.qEditWindows import qEditUnitWindow, qEditPropertyWindow, qEditResultWindow, qEditTypeWindow, \
+    qEditMaterialWindow
 
 
 class MaterialWidget(QWidget):
@@ -64,7 +65,6 @@ class MaterialWidget(QWidget):
 
         self.edit_material_button = QPushButton(self)
         self.edit_material_button.setText("Изменить материал")
-        self.edit_material_button.setEnabled(False)
         self.edit_material_button.clicked.connect(self.__edit_material_button_clicked)
 
         self.delete_material_button = QPushButton(self)
@@ -296,6 +296,7 @@ class MaterialWidget(QWidget):
         self.add_property_window = qAddPropertyWindow.AddPropertyWindow()
         self.add_property_window.show()
 
+    @QtCore.pyqtSlot()
     def __add_condition_button_clicked(self):
         self.add_condition_window = qAddConditionWindow.AddConditionWindow()
         self.add_condition_window.show()
@@ -314,7 +315,8 @@ class MaterialWidget(QWidget):
         self.edit_type_window.show()
 
     def __edit_material_button_clicked(self):
-        pass
+        self.edit_material_window = qEditMaterialWindow.EditMaterialWindow(self.material_combo_box.currentText())
+        self.edit_material_window.show()
 
     def __edit_property_button_clicked(self):
         current_unit = self.math_operator_worker.get_unit_by_property_name(self.property_combo_box.currentText())[0][0]
