@@ -3,7 +3,7 @@ import pingouin as pg
 
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractItemView, QHeaderView, QHBoxLayout, \
-    QPushButton, QGridLayout, QLabel, QRadioButton, QLineEdit, QButtonGroup
+    QPushButton, QGridLayout, QLabel, QRadioButton, QLineEdit, QButtonGroup, QFileDialog, QMessageBox
 from scipy import stats
 
 from sklearn.linear_model import LinearRegression
@@ -34,7 +34,6 @@ def dataframe_generation_from_table(table, columns: list[str] = None) -> pd.Data
 
 
 class MathModelWidget(QWidget):
-
     table_sgn = pyqtSignal(QTableWidget)
 
     def __init__(self):
@@ -87,19 +86,17 @@ class MathModelWidget(QWidget):
         table_layout = QVBoxLayout()
         analysis_layout = QGridLayout()
 
+        self.save_df_btn = QPushButton('Сохранить')
+        self.save_df_btn.setEnabled(False)
+        self.save_df_btn.clicked.connect(self.__save_df_btn_clicked)
+
         eda_label = QLabel('Разведочный анализ')
-        analysis_layout.addWidget(eda_label, 0, 0)
 
         settings_btn = QPushButton('Настройки')
         settings_btn.clicked.connect(self.__settings_btn_clicked)
-        analysis_layout.addWidget(settings_btn, 1, 0)
 
         self.exploratory_btn = QPushButton('EDA')
         self.exploratory_btn.clicked.connect(self.__exploratory_btn_clicked)
-
-        table_layout.addWidget(self.table)
-
-        analysis_layout.addWidget(self.exploratory_btn, 2, 0)
 
         self.model_btn_gp = QButtonGroup()
         self.model_btn_gp.setObjectName('model_btn_gp')
@@ -118,6 +115,12 @@ class MathModelWidget(QWidget):
         self.apply_text_btn = QPushButton('Применить')
         self.apply_text_btn.clicked.connect(self.__apply_btn_clicked)
 
+        table_layout.addWidget(self.table)
+        table_layout.addWidget(self.save_df_btn)
+
+        analysis_layout.addWidget(eda_label, 0, 0)
+        analysis_layout.addWidget(settings_btn, 1, 0)
+        analysis_layout.addWidget(self.exploratory_btn, 2, 0)
         analysis_layout.addWidget(model_lbl, 3, 0)
         analysis_layout.addWidget(linear_rb, 4, 0)
         analysis_layout.addWidget(quad_rb, 5, 0)
@@ -160,6 +163,14 @@ class MathModelWidget(QWidget):
                 self.result_txt_ed.setText('y = ')
             case _:
                 self.result_txt_ed.setText('')
+
+    def __save_df_btn_clicked(self):
+        filename = QFileDialog.getSaveFileName(self, 'Сохранение данных', filter='*.csv')
+        if not filename[0]:
+            QMessageBox.warning(self, 'Сохранение данных', 'Вы не выбрали имя для сохранения')
+            return
+        self.df_manager.save_df(filename[0])
+        QMessageBox.information(self, 'Сохранение данных', 'Данные успешно сохранены')
 
     def __apply_btn_clicked(self):
 

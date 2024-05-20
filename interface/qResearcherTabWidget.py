@@ -41,6 +41,7 @@ class ResearcherTabWidget(QWidget):
                          for i in range(self.data_tab.table.columnCount())]
         self.math_model_tab.df_manager = DataFrameManager(dataframe_generation_from_table(self.data_tab.table,
                                                                                           header_labels))
+        self.math_model_tab.save_df_btn.setEnabled(True)
         self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data').setEnabled(False)
 
     def __apply_result(self):

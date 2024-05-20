@@ -8,6 +8,9 @@ class DataFrameManager:
     def get_y(self):
         return self.df[self.df.columns[-1]]
 
+    def save_df(self, filename: str):
+        self.df.to_csv(filename, index=False)
+
     # @property
     # def df(self) -> pd.DataFrame:
     #     return self.df
