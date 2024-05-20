@@ -36,6 +36,14 @@ class UserDataBaseWorker:
         self.cur.execute(f"SELECT id_user_type FROM user_type WHERE name = '{user_type}'")
         return self.cur.fetchall()
 
-    def delete_user(self, login):
-        self.cur.execute(f"DELETE FROM user WHERE login = '{login}'")
+    def delete_user(self, login: str):
+        self.cur.execute(f"DELETE FROM user WHERE login = (?)", (login,))
+        self.conn.commit()
+
+    def update_user(self, old_login, new_login, password, user_type):
+        self.cur.execute(f"UPDATE user\n"
+                         f"SET login = (?), password = (?), id_user_type = (\n"
+                         f"SELECT id_user_type FROM user_type WHERE name = (?)\n"
+                         f")\n"
+                         f"WHERE login = (?)", (new_login, password, user_type, old_login))
         self.conn.commit()

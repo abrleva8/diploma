@@ -30,5 +30,8 @@ class AdminWidgets(QWidget):
 
     def __material_tab_clicked(self, index):
         self.material_bd_worker = material_bd.MaterialDataBaseWorker()
-        if index == 1:
-            self.materials.init_combox()
+        match index:
+            case 0:
+                self.user_tab.init_users_combo_box()
+            case 1:
+                self.materials.init_combox()

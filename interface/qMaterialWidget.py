@@ -28,7 +28,7 @@ class MaterialWidget(QWidget):
 
     def __get_material_layout(self):
         layout = QGridLayout()
-        ####
+
         self.material_type_label = QLabel("Тип")
 
         self.material_type_cmbox = QComboBox(self)
