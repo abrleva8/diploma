@@ -33,7 +33,7 @@ class AddTypeWindow(QMainWindow):
 
         layout.addWidget(self.type_lbl, 0, 0)
         layout.addWidget(self.type_input, 0, 1)
-        layout.addWidget(self.add_button, 1, 0, 2, 0)
+        layout.addWidget(self.add_цbutton, 1, 0, 2, 0)
 
         return layout
 
