@@ -1,4 +1,3 @@
-
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QMessageBox
 
 from database import material_bd

@@ -8,6 +8,7 @@ from interface.qLoginWindow import LoginWindow
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)
+    app.setStyle('Fusion')
 
     window = LoginWindow()
     window.show()

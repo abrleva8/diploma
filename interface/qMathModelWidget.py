@@ -66,6 +66,7 @@ class MathModelWidget(QWidget):
                 self.table.setHorizontalHeaderItem(col_number, header_item.clone())
 
         self.model_size = num_cols - 3
+        self.__set_btn_enabled()
 
     def change_header(self, table: QTableWidget):
         num_cols = table.columnCount()
@@ -103,16 +104,23 @@ class MathModelWidget(QWidget):
 
         model_lbl = QLabel('Модель: ')
 
-        linear_rb = QRadioButton('Линейная')
-        quad_rb = QRadioButton('Квадратичная')
-        user_rb = QRadioButton('Пользовательская')
-        self.model_btn_gp.addButton(linear_rb, 1)
-        self.model_btn_gp.addButton(quad_rb, 2)
-        self.model_btn_gp.addButton(user_rb, 3)
+        self.linear_rb = QRadioButton('Линейная')
+        self.quad_rb = QRadioButton('Квадратичная')
+        self.user_rb = QRadioButton('Пользовательская')
+
+        self.linear_rb.setEnabled(False)
+        self.quad_rb.setEnabled(False)
+        self.user_rb.setEnabled(False)
+
+        self.model_btn_gp.addButton(self.linear_rb, 1)
+        self.model_btn_gp.addButton(self.quad_rb, 2)
+        self.model_btn_gp.addButton(self.user_rb, 3)
         self.model_btn_gp.buttonClicked.connect(self.__set_result_txt_ed)
+
         self.result_txt_ed = QLineEdit()
         self.result_txt_ed.setEnabled(False)
         self.apply_text_btn = QPushButton('Применить')
+        self.apply_text_btn.setEnabled(False)
         self.apply_text_btn.clicked.connect(self.__apply_btn_clicked)
 
         table_layout.addWidget(self.table)
@@ -122,9 +130,9 @@ class MathModelWidget(QWidget):
         analysis_layout.addWidget(settings_btn, 1, 0)
         analysis_layout.addWidget(self.exploratory_btn, 2, 0)
         analysis_layout.addWidget(model_lbl, 3, 0)
-        analysis_layout.addWidget(linear_rb, 4, 0)
-        analysis_layout.addWidget(quad_rb, 5, 0)
-        analysis_layout.addWidget(user_rb, 6, 0)
+        analysis_layout.addWidget(self.linear_rb, 4, 0)
+        analysis_layout.addWidget(self.quad_rb, 5, 0)
+        analysis_layout.addWidget(self.user_rb, 6, 0)
         analysis_layout.addWidget(self.result_txt_ed, 7, 0)
         analysis_layout.addWidget(self.apply_text_btn, 8, 0)
 
@@ -163,6 +171,12 @@ class MathModelWidget(QWidget):
                 self.result_txt_ed.setText('y = ')
             case _:
                 self.result_txt_ed.setText('')
+
+    def __set_btn_enabled(self) -> None:
+        self.linear_rb.setEnabled(True)
+        self.quad_rb.setEnabled(True)
+        self.user_rb.setEnabled(True)
+        self.apply_text_btn.setEnabled(True)
 
     def __save_df_btn_clicked(self):
         filename = QFileDialog.getSaveFileName(self, 'Сохранение данных', filter='*.csv')

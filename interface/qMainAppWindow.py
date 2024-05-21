@@ -3,11 +3,13 @@ from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QMenu
 
 import interface
+import resources
 
 
 class QMainAppWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.setWindowIcon(QtGui.QIcon(':/logo.ico'))
 
         self.__create_actions()
         self.__create_menu_bar()
