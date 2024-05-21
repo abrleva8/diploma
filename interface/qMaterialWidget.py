@@ -6,7 +6,7 @@ from database import material_bd
 from interface.qAddWindows import qAddResultWindow, qAddPropertyWindow, qAddMaterialWindow, qAddConditionWindow, \
     qAddUnitWindow, qAddTypeWindow
 from interface.qEditWindows import qEditUnitWindow, qEditPropertyWindow, qEditResultWindow, qEditTypeWindow, \
-    qEditMaterialWindow
+    qEditMaterialWindow, qEditConditionWindow
 
 
 class MaterialWidget(QWidget):
@@ -240,7 +240,7 @@ class MaterialWidget(QWidget):
     def __condition_combo_box_changed(self):
         has_text = bool(self.condition_combo_box.currentText())
         self.delete_condition_button.setEnabled(has_text)
-        # self.edit_condition_button.setEnabled(has_text)
+        self.edit_condition_button.setEnabled(has_text)
 
     def __result_combo_box_changed(self):
         has_text = bool(self.result_combo_box.currentText())
@@ -325,7 +325,10 @@ class MaterialWidget(QWidget):
         self.edit_property_window.show()
 
     def __edit_condition_button_clicked(self):
-        pass
+        current_unit = self.math_operator_worker.get_unit_by_condition_name(self.condition_combo_box.currentText())[0][0]
+        self.edit_condition_window = qEditConditionWindow.EditConditionWindow(self.condition_combo_box.currentText(),
+                                                                              current_unit)
+        self.edit_condition_window.show()
 
     def __edit_result_button_clicked(self):
         current_result = self.result_combo_box.currentText()

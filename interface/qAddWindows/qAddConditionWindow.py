@@ -1,6 +1,6 @@
 from sqlite3 import IntegrityError
 
-from PyQt6.QtWidgets import QWidget, QMainWindow, QGridLayout, QLabel, QApplication, QLineEdit, QComboBox, QPushButton, \
+from PyQt6.QtWidgets import QWidget, QMainWindow, QGridLayout, QLabel, QLineEdit, QComboBox, QPushButton, \
     QMessageBox
 
 from database import material_bd
@@ -70,6 +70,7 @@ class AddConditionWindow(QMainWindow):
 
 if __name__ == "__main__":
     import sys
+    from PyQt6.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
     window = AddConditionWindow()

@@ -24,6 +24,10 @@ def dataframe_generation_from_table(table, columns: list[str] = None) -> pd.Data
     tmp_df = pd.DataFrame(index=range(number_of_rows), columns=columns)
 
     for i in range(number_of_rows):
+
+        for j in range(2):
+            tmp_df.iloc[i, j] = table.item(i, j).text()
+
         for j in range(2, number_of_columns):
             tmp_df.iloc[i, j] = float(table.item(i, j).text())
 
@@ -189,11 +193,10 @@ class MathModelWidget(QWidget):
     def __apply_btn_clicked(self):
 
         new_X = get_new_x(self.df_manager.df, self.result_txt_ed.text())
-        self.result = pg.linear_regression(new_X, self.df_manager.df[self.df_manager.df.columns[-1]])
+        y = self.df_manager.get_y()
+        self.result = pg.linear_regression(new_X, y)
 
         # TODO: create a class for the next code lines
-        y = self.df_manager.get_y()
-
         lr = LinearRegression()
         lr.fit(new_X, y)
         y_pred = lr.predict(new_X)

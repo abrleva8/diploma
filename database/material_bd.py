@@ -77,6 +77,13 @@ class MaterialDataBaseWorker:
                          "WHERE property.name = (?);", (property_name,))
         return self.cur.fetchall()
 
+    def get_unit_by_condition_name(self, condition_name: str):
+        self.cur.execute("SELECT denote\n"
+                         "FROM unit\n"
+                         "INNER JOIN condition ON unit.id_unit = condition.id_unit\n"
+                         "WHERE condition.name = (?);", (condition_name,))
+        return self.cur.fetchall()
+
     def get_unit_by_result_name(self, result_name):
         self.cur.execute("SELECT denote\n"
                          "FROM unit\n"
@@ -207,6 +214,22 @@ class MaterialDataBaseWorker:
                          f'SET parameter_name = (?), id_unit = (?)\n'
                          f'WHERE parameter_name = (?) AND id_unit = (?)',
                          (new_result_name, new_id_unit, current_result_name, curr_id_unit))
+
+    def edit_condition(self, current_condition_name: str, current_unit_name: str,
+                       new_condition_name: str, new_unit_name: str):
+        self.cur.execute('UPDATE condition\n'
+                             'SET name = (?) , id_unit = (\n'
+                             'SELECT id_unit\n'
+                             'FROM unit\n'
+                             'WHERE denote = (?)\n'
+                             ')\n'
+                             'WHERE name = (?) AND id_unit = (\n'
+                             'SELECT id_unit\n'
+                             'FROM unit\n'
+                             'WHERE denote = (?)\n'
+                             ')',
+                             (new_condition_name, new_unit_name, current_condition_name, current_unit_name))
+        return self.cur.rowcount
 
     def edit_property(self, current_property_name: str, current_unit_name: str, new_property_name: str,
                       new_unit_name: str):

@@ -16,7 +16,6 @@ class DataWidget(QWidget):
 
         self.math_operator_worker = material_bd.MaterialDataBaseWorker()
         self.__init_cmbs()
-        # self.df_manager: DataFrameManager
 
     def __init_cmbs(self):
         self.__init_result_cmb()
@@ -85,6 +84,8 @@ class DataWidget(QWidget):
         else:
             QMessageBox.warning(self, 'Ошибка', 'Файл не выбран')
 
+        self.layout.parentWidget().findChild(QPushButton, 'confirm_data').setEnabled(True)
+
     def __get_full_dataset(self) -> None:
         result = self.result_cmb.currentText()
         type_material = self.type_cmb.currentText()
@@ -118,5 +119,16 @@ class DataWidget(QWidget):
         self.type_cmb.clear()
         self.type_cmb.addItems(types)
 
-    def __read_data(self, file_name) -> pd.DataFrame | None:
-        pass
+    def __read_data(self, file_name: str) -> None:
+        df = pd.read_csv(file_name)
+        keys = df.columns
+        self.table.setRowCount(df.shape[0])
+        self.table.setColumnCount(df.shape[1])
+        self.table.setHorizontalHeaderLabels(keys)
+
+        for i in range(df.shape[0]):
+            for j in range(df.shape[1]):
+                val = df.iloc[i, j]
+                self.table.setItem(i, j, QTableWidgetItem(str(val)))
+
+

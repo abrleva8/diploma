@@ -52,6 +52,3 @@ class ModelSelectionWidget(QWidget):
     def __apply_btn_clicked(self):
         eq = utils.eq_creator.pars_eq(self.result_txt_ed.text())
         self.eq_signal.emit(eq)
-        df = get_new_x(self.df_manager.df, self.result_txt_ed.text())
-        return df
-

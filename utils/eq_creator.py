@@ -35,7 +35,6 @@ def drop_a(mult: str) -> str:
 
 
 def get_new_x(df: pd.DataFrame, text: str) -> pd.DataFrame:
-    # df.to_csv('fragment.csv', index=False)
     new_columns = df.columns[2:].str.split(', ')
     d = {}
     for column in new_columns:
@@ -50,7 +49,6 @@ def get_new_x(df: pd.DataFrame, text: str) -> pd.DataFrame:
             new_X[key] = df[d[key]]
         else:
             x = key.split('*')
-            # new_X[key] = new_X[x[0]] * new_X[x[1]]
             new_X[key] = df[d[x[1].strip()]] * df[d[x[1].strip()]]
 
     return new_X
