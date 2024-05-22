@@ -4,9 +4,10 @@ from PyQt6.QtWidgets import (QWidget, QMainWindow, QGridLayout, QLabel, QApplica
                              QPushButton, QMessageBox)
 
 from database import material_bd
+from interface.qAppWindows.qAppWindow import QAppWindow
 
 
-class EditPropertyWindow(QMainWindow):
+class EditPropertyWindow(QAppWindow):
     def __init__(self, property_name: str, current_unit_denote: str):
         super().__init__()
         self.setWindowTitle("Изменить свойство")

@@ -4,9 +4,10 @@ from PyQt6.QtWidgets import QWidget, QMainWindow, QGridLayout, QLabel, QApplicat
     QMessageBox
 
 from database import material_bd
+from interface.qAppWindows.qAppWindow import QAppWindow
 
 
-class AddPropertyWindow(QMainWindow):
+class AddPropertyWindow(QAppWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Добавление свойства")

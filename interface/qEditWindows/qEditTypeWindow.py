@@ -4,9 +4,10 @@ from PyQt6.QtWidgets import (QWidget, QMainWindow, QGridLayout, QLabel, QApplica
                              QMessageBox)
 
 from database import material_bd
+from interface.qAppWindows.qAppWindow import QAppWindow
 
 
-class EditTypeWindow(QMainWindow):
+class EditTypeWindow(QAppWindow):
     def __init__(self, type_name: str):
         super().__init__()
         self.setWindowTitle("Изменить тип материала")

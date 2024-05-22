@@ -5,10 +5,11 @@ from PyQt6.QtWidgets import QMainWindow, QGridLayout, QLayout, QLabel, QWidget, 
 
 from database import admin_bd
 from interface.qAdminWindow import AdminWindow
+from interface.qAppWindows.qAppWindow import QAppWindow
 from interface.qResearcherWindow import ResearcherWindow
 
 
-class LoginWindow(QMainWindow):
+class LoginWindow(QAppWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Авторизация")

@@ -2,9 +2,10 @@ from sqlite3 import IntegrityError
 
 from PyQt6.QtWidgets import QMainWindow, QWidget, QGridLayout, QLabel, QLineEdit, QComboBox, QPushButton, QMessageBox
 from database import material_bd
+from interface.qAppWindows.qAppWindow import QAppWindow
 
 
-class AddResultWindow(QMainWindow):
+class AddResultWindow(QAppWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Добавление результата")

@@ -1,4 +1,4 @@
-from interface.qMainAppWindow import QMainAppWindow
+from interface.qAppWindows.qMainAppWindow import QMainAppWindow
 from interface.qResearcherTabWidget import ResearcherTabWidget
 
 

@@ -1,20 +1,18 @@
 import numpy as np
 import pandas as pd
-from PyQt6 import QtGui
+import seaborn as sns
 from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtWidgets import QWidget, QGridLayout, QLayout, QMainWindow, QMdiArea, QMessageBox, QMdiSubWindow, QLabel
-
+from PyQt6.QtWidgets import QMainWindow, QMdiArea, QMessageBox, QMdiSubWindow, QLabel
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-
 from scipy.stats import norm
 from scipy.stats import shapiro
 
-import seaborn as sns
+from interface.qAppWindows.qAppWindow import QAppWindow
 
 
-class NormalAnalystWindow(QMainWindow):
+class NormalAnalystWindow(QAppWindow):
 
     is_normal_signal = pyqtSignal(bool)
 

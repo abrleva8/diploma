@@ -4,9 +4,10 @@ from PyQt6.QtWidgets import (QWidget, QMainWindow, QGridLayout, QLabel, QApplica
                              QPushButton, QMessageBox)
 
 from database import material_bd
+from interface.qAppWindows.qAppWindow import QAppWindow
 
 
-class AddTypeWindow(QMainWindow):
+class AddTypeWindow(QAppWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Добавить тип")

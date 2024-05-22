@@ -4,9 +4,10 @@ from PyQt6.QtWidgets import QWidget, QMainWindow, QGridLayout, QLabel, QLineEdit
     QMessageBox
 
 from database import material_bd
+from interface.qAppWindows.qAppWindow import QAppWindow
 
 
-class AddConditionWindow(QMainWindow):
+class AddConditionWindow(QAppWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Добавление условия")

@@ -4,9 +4,10 @@ from PyQt6.QtWidgets import (QWidget, QMainWindow, QGridLayout, QLabel, QLineEdi
                              QPushButton, QMessageBox)
 
 from database import material_bd
+from interface.qAppWindows.qAppWindow import QAppWindow
 
 
-class EditConditionWindow(QMainWindow):
+class EditConditionWindow(QAppWindow):
     def __init__(self, condition_name: str, current_unit_denote: str):
         super().__init__()
         self.setWindowTitle("Изменить условие")

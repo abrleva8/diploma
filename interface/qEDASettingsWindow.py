@@ -3,8 +3,10 @@ from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QGridLayout, QLayout, QLabel, QCheckBox, QComboBox, \
     QPushButton
 
+from interface.qAppWindows.qAppWindow import QAppWindow
 
-class EDASettingsWindow(QMainWindow):
+
+class EDASettingsWindow(QAppWindow):
     eda_set_signal = pyqtSignal(bool, str)
 
     def __init__(self):

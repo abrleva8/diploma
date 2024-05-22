@@ -4,9 +4,10 @@ from PyQt6.QtWidgets import QWidget, QMainWindow, QGridLayout, QLabel, QApplicat
     QPushButton, QMessageBox
 
 from database import admin_bd
+from interface.qAppWindows.qAppWindow import QAppWindow
 
 
-class AddUserWindow(QMainWindow):
+class AddUserWindow(QAppWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Добавить пользователя")

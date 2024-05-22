@@ -1,16 +1,14 @@
-import numpy as np
 import pandas as pd
-from PyQt6 import QtCore, QtGui
-from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QMainWindow, QApplication, QMdiArea, QMdiSubWindow
-
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
+from interface.qAppWindows.qAppWindow import QAppWindow
+
 
 # TODO: get real name
-class PlottingWindow(QMainWindow):
+class PlottingWindow(QAppWindow):
     def __init__(self, df: pd.DataFrame, cols: list[str]):
         super().__init__()
         self.df = df

@@ -4,9 +4,10 @@ from PyQt6.QtWidgets import QWidget, QMainWindow, QGridLayout, QLabel, QApplicat
     QMessageBox, QSpinBox, QDoubleSpinBox
 
 from database import material_bd
+from interface.qAppWindows.qAppWindow import QAppWindow
 
 
-class EditMaterialWindow(QMainWindow):
+class EditMaterialWindow(QAppWindow):
     def __init__(self, curr_material_name: str):
         super().__init__()
         self.setWindowTitle(f"Изменение {curr_material_name}")

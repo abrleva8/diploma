@@ -4,9 +4,10 @@ from PyQt6.QtWidgets import QWidget, QMainWindow, QGridLayout, QLabel, QLineEdit
     QPushButton, QMessageBox
 
 from database import admin_bd
+from interface.qAppWindows.qAppWindow import QAppWindow
 
 
-class EditUserWindow(QMainWindow):
+class EditUserWindow(QAppWindow):
     def __init__(self, login: str):
         super().__init__()
         self.login = login

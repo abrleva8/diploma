@@ -1,6 +1,6 @@
 import interface
 
-from interface.qMainAppWindow import QMainAppWindow
+from interface.qAppWindows.qMainAppWindow import QMainAppWindow
 
 
 class AdminWindow(QMainAppWindow):

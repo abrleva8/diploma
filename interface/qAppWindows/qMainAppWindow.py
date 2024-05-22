@@ -1,15 +1,14 @@
 from PyQt6 import QtGui
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QMainWindow, QMenu
+from PyQt6.QtWidgets import QMenu
 
 import interface
-import resources
+from interface.qAppWindows.qAppWindow import QAppWindow
 
 
-class QMainAppWindow(QMainWindow):
+class QMainAppWindow(QAppWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowIcon(QtGui.QIcon(':/logo.ico'))
 
         self.__create_actions()
         self.__create_menu_bar()
