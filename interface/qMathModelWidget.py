@@ -5,13 +5,16 @@ from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractItemView, QHeaderView, QHBoxLayout, \
     QPushButton, QGridLayout, QLabel, QRadioButton, QLineEdit, QButtonGroup, QFileDialog, QMessageBox
 from scipy import stats
+from sklearn.compose import ColumnTransformer
 
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
+from sklearn.pipeline import Pipeline
 
 from interface.qEDASettingsWindow import EDASettingsWindow
 from interface.qNormalAnalystWindow import NormalAnalystWindow
 from math_model.data_frame_manager import DataFrameManager
+from math_model.transformer import CustomTransformer
 from utils.eq_creator import get_linear, get_quad, get_new_x
 
 
@@ -191,20 +194,31 @@ class MathModelWidget(QWidget):
         QMessageBox.information(self, 'Сохранение данных', 'Данные успешно сохранены')
 
     def __apply_btn_clicked(self):
+        text = self.result_txt_ed.text()
+        new_X = get_new_x(self.df_manager.df, text)
 
-        new_X = get_new_x(self.df_manager.df, self.result_txt_ed.text())
+        custom_transformer = CustomTransformer(column_names=self.df_manager.df.columns, text=text)
+        lr = LinearRegression()
+        preprocessor = ColumnTransformer(
+            transformers=[
+                ('custom', custom_transformer, self.df_manager.df.columns)
+            ]
+        )
+        # Assuming 'model' is your machine learning model (e.g., RandomForestClassifier)
+        pipeline = Pipeline(steps=[('preprocessor', preprocessor),
+                                   ('model', lr)])
+
         y = self.df_manager.get_y()
         self.result = pg.linear_regression(new_X, y)
 
         # TODO: create a class for the next code lines
-        lr = LinearRegression()
-        lr.fit(new_X, y)
-        y_pred = lr.predict(new_X)
+        pipeline.fit(self.df_manager.df, y)
+        y_pred = pipeline.predict(self.df_manager.df)
 
         pearson_corr = stats.pearsonr(y, y_pred)
         corr = pearson_corr.statistic
 
-        f1 = len(lr.coef_)
+        f1 = len(pipeline[1].coef_)
         f2 = len(y) - f1 - 1
 
         dfn = min(f1, f2)
@@ -212,7 +226,7 @@ class MathModelWidget(QWidget):
 
         self.fisher = corr ** 2 / (1 - corr ** 2) * (dfn / dfd)
         self.fisher_table = stats.f.ppf(q=0.95, dfn=dfn, dfd=dfd)
-        self.r2 = lr.score(new_X, y)
+        self.r2 = pipeline.score(self.df_manager.df, y)
         self.mse = mean_squared_error(y, y_pred)
 
 

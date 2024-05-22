@@ -3,6 +3,7 @@ from itertools import combinations_with_replacement
 import pandas as pd
 
 
+# TODO: clean up file
 def get_linear(size: int, add_y: bool = False) -> str:
     li_res = [f'a{i + 1}*x{i + 1}' for i in range(size)]
     return add_y * 'y = ' + 'a0+' + '+'.join(li_res)
@@ -49,6 +50,6 @@ def get_new_x(df: pd.DataFrame, text: str) -> pd.DataFrame:
             new_X[key] = df[d[key]]
         else:
             x = key.split('*')
-            new_X[key] = df[d[x[1].strip()]] * df[d[x[1].strip()]]
+            new_X[key] = df[d[x[0].strip()]] * df[d[x[1].strip()]]
 
     return new_X
