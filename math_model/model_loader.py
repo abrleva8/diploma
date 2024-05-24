@@ -1,5 +1,5 @@
 import pandas as pd
-import pickle
+import joblib
 
 from sklearn.pipeline import Pipeline
 
@@ -10,10 +10,8 @@ class ModelLoader:
         self.pingouin_result = pingouin_result
 
     def save(self, file_name: str) -> None:
-        with open(file_name, 'wb') as f:
-            pickle.dump(self, f)
+        joblib.dump(self, file_name)
 
     @classmethod
     def read(cls, file_name: str) -> None:
-        with open(file_name, 'rb') as f:
-            return pickle.load(f)
+        pass

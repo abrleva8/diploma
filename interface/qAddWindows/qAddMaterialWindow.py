@@ -86,16 +86,21 @@ class AddMaterialWindow(QAppWindow):
 
     def set_labels(self, layout: QGridLayout):
         if self.properties is None:
-            self.properties = self.math_operator_worker.get_properties()
-            self.properties = list(map(lambda x: x[0], self.properties))
+            self.properties = self.math_operator_worker.get_properties(unit=True)
 
         for index, proper in enumerate(self.properties):
-            q_label = QLabel(proper)
-            q_label.setObjectName(proper)
-            layout.addWidget(q_label, index + 2, 0)
+            q_label = QLabel(proper[0])
+            q_label.setObjectName(proper[0])
+
             spin_box = QDoubleSpinBox()
-            spin_box.setObjectName(f'{proper}_spinbox')
+            spin_box.setObjectName(f'{proper[0]}_spinbox')
             layout.addWidget(spin_box, index + 2, 1)
+
+            unit_label = QLabel(proper[1])
+
+            layout.addWidget(q_label, index + 2, 0)
+            layout.addWidget(spin_box, index + 2, 1)
+            layout.addWidget(unit_label, index + 2, 2)
 
     def __init_material_types_cmbox(self):
         material_types = self.math_operator_worker.get_material_types()

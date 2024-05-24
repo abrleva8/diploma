@@ -29,8 +29,11 @@ class MaterialDataBaseWorker:
         self.cur.execute("INSERT INTO raw_material(name, id_type) VALUES (?, ?)", (material_name, type_id))
         self.conn.commit()
 
-    def get_properties(self) -> list[tuple[str,]]:
-        self.cur.execute("SELECT name FROM property")
+    def get_properties(self, unit: bool = False) -> list[tuple[str, str]]:
+        if unit:
+            self.cur.execute("SELECT name, denote FROM property INNER JOIN unit ON property.id_unit = unit.id_unit")
+        else:
+            self.cur.execute("SELECT name FROM property")
         return self.cur.fetchall()
 
     def get_types(self):
@@ -218,17 +221,17 @@ class MaterialDataBaseWorker:
     def edit_condition(self, current_condition_name: str, current_unit_name: str,
                        new_condition_name: str, new_unit_name: str):
         self.cur.execute('UPDATE condition\n'
-                             'SET name = (?) , id_unit = (\n'
-                             'SELECT id_unit\n'
-                             'FROM unit\n'
-                             'WHERE denote = (?)\n'
-                             ')\n'
-                             'WHERE name = (?) AND id_unit = (\n'
-                             'SELECT id_unit\n'
-                             'FROM unit\n'
-                             'WHERE denote = (?)\n'
-                             ')',
-                             (new_condition_name, new_unit_name, current_condition_name, current_unit_name))
+                         'SET name = (?) , id_unit = (\n'
+                         'SELECT id_unit\n'
+                         'FROM unit\n'
+                         'WHERE denote = (?)\n'
+                         ')\n'
+                         'WHERE name = (?) AND id_unit = (\n'
+                         'SELECT id_unit\n'
+                         'FROM unit\n'
+                         'WHERE denote = (?)\n'
+                         ')',
+                         (new_condition_name, new_unit_name, current_condition_name, current_unit_name))
         return self.cur.rowcount
 
     def edit_property(self, current_property_name: str, current_unit_name: str, new_property_name: str,

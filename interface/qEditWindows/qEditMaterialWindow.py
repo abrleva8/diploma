@@ -1,7 +1,7 @@
 from sqlite3 import IntegrityError
 
-from PyQt6.QtWidgets import QWidget, QMainWindow, QGridLayout, QLabel, QApplication, QLineEdit, QComboBox, QPushButton, \
-    QMessageBox, QSpinBox, QDoubleSpinBox
+from PyQt6.QtWidgets import QWidget, QGridLayout, QLabel, QApplication, QLineEdit, QComboBox, QPushButton, \
+    QMessageBox, QDoubleSpinBox
 
 from database import material_bd
 from interface.qAppWindows.qAppWindow import QAppWindow
@@ -78,18 +78,20 @@ class EditMaterialWindow(QAppWindow):
 
     def set_labels(self, layout: QGridLayout):
         if self.properties is None:
-            self.properties = self.math_operator_worker.get_properties()
-            self.properties = list(map(lambda x: x[0], self.properties))
+            self.properties = self.math_operator_worker.get_properties(unit=True)
 
         for index, proper in enumerate(self.properties):
-            q_label = QLabel(proper)
-            q_label.setObjectName(proper)
+            q_label = QLabel(proper[0])
+            q_label.setObjectName(proper[0])
 
             spin_box = QDoubleSpinBox()
-            spin_box.setObjectName(f'{proper}_spinbox')
+            spin_box.setObjectName(f'{proper[0]}_spinbox')
+
+            unit_label = QLabel(proper[1])
 
             layout.addWidget(q_label, index + 2, 0)
             layout.addWidget(spin_box, index + 2, 1)
+            layout.addWidget(unit_label, index + 2, 3)
 
     def __init_values(self):
         type_name = self.math_operator_worker.get_type_id_by_material_name(self.__curr_material_name)[0][0]

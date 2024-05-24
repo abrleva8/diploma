@@ -124,11 +124,12 @@ class MathModelWidget(QWidget):
         self.model_btn_gp.addButton(self.quad_rb, 2)
         self.model_btn_gp.addButton(self.user_rb, 3)
         self.model_btn_gp.buttonClicked.connect(self.__set_result_txt_ed)
+        self.model_btn_gp.buttonToggled.connect(self.__set_apply_btn_enabled)
 
         self.result_txt_ed = QLineEdit()
         self.result_txt_ed.setEnabled(False)
         self.apply_text_btn = QPushButton('Применить')
-        # self.apply_text_btn.setEnabled(False)
+        self.apply_text_btn.setEnabled(False)
         self.apply_text_btn.clicked.connect(self.__apply_btn_clicked)
 
         table_layout.addWidget(self.table)
@@ -184,6 +185,9 @@ class MathModelWidget(QWidget):
         self.linear_rb.setEnabled(True)
         self.quad_rb.setEnabled(True)
         self.user_rb.setEnabled(True)
+
+    def __set_apply_btn_enabled(self) -> None:
+        self.apply_text_btn.setEnabled(True)
 
     def __save_df_btn_clicked(self) -> None:
         filename = QFileDialog.getSaveFileName(self, 'Сохранение данных', filter='*.csv')

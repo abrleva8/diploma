@@ -30,7 +30,7 @@ class MathModelResultWidget(QWidget):
             self.table.setRowCount(self.table.rowCount() + 1)
 
             for j in range(self.table.columnCount()):
-                self.table.setItem(i, j, QTableWidgetItem(str(row[j])))
+                self.table.setItem(i, j, QTableWidgetItem(str(row.iloc[j])))
 
     def set_fisher_info(self, fisher: float, fisher_table: float) -> None:
 
