@@ -42,7 +42,8 @@ class CustomTransformer(BaseEstimator, TransformerMixin):
 
         text = self.__drop_y(text)
 
-        new_keys = list(map(self.__drop_a, text.split('+')))
+        new_keys = map(self.__drop_a, text.split('+'))
+        new_keys = map(lambda x: x.strip(), new_keys)
         new_keys = list(filter(lambda x: bool(x), new_keys))
 
         return new_keys, d
@@ -57,7 +58,7 @@ class CustomTransformer(BaseEstimator, TransformerMixin):
                 new_X[key] = df[d[key]]
             else:
                 x = key.split('*')
-                # print(new_X)
+
                 new_X[key] = df[d[x[0].strip()]] * df[d[x[1].strip()]]
-        # print(new_X)
+
         return new_X

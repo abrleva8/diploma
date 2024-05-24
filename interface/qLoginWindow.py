@@ -1,12 +1,12 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QMainWindow, QGridLayout, QLayout, QLabel, QWidget, QLineEdit, QPushButton, QApplication, \
+from PyQt6.QtWidgets import QGridLayout, QLayout, QLabel, QWidget, QLineEdit, QPushButton, QApplication, \
     QMessageBox
 
 
 from database import admin_bd
 from interface.qAdminWindow import AdminWindow
 from interface.qAppWindows.qAppWindow import QAppWindow
-from interface.qResearcherWindow import ResearcherWindow
+from interface.qResearcherWindows.qResearcherWindow import ResearcherWindow
 
 
 class LoginWindow(QAppWindow):
@@ -18,7 +18,7 @@ class LoginWindow(QAppWindow):
         main_widget = QWidget()
         main_widget.setLayout(layout)
         self.setCentralWidget(main_widget)
-        self.resize(300, 150)
+        self.setFixedSize(300, 150)
 
     def _get_layout(self) -> QLayout:
         layout = QGridLayout()

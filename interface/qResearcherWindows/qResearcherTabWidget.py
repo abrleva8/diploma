@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QPushButton
 
-from interface.qDataWidget import DataWidget
-from interface.qMathModelResultWidget import MathModelResultWidget
-from interface.qMathModelWidget import MathModelWidget, dataframe_generation_from_table
+from interface.qResearcherWindows.qDataWidget import DataWidget
+from interface.qResearcherWindows.qMathModelResultWidget import MathModelResultWidget
+from interface.qResearcherWindows.qMathModelWidget import MathModelWidget, dataframe_generation_from_table
 from math_model.data_frame_manager import DataFrameManager
 
 
@@ -24,8 +24,11 @@ class ResearcherTabWidget(QWidget):
         self.tabs.addTab(self.math_model_result, "Результаты")
 
         # Connect events
-        self.child = self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data')
-        self.child.clicked.connect(self.__apply_dataset)
+        self.child_confirm_data_btn = self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data')
+        self.child_confirm_data_btn.clicked.connect(self.__apply_dataset)
+
+        self.child_save_model_btn = self.math_model_result.parentWidget().findChild(QPushButton, 'save_model_btn')
+        self.child_save_model_btn.clicked.connect(self.__save_model)
 
         self.math_model_tab.apply_text_btn.clicked.connect(self.__apply_result)
 
@@ -49,6 +52,9 @@ class ResearcherTabWidget(QWidget):
         self.math_model_result.set_fisher_info(self.math_model_tab.fisher, self.math_model_tab.fisher_table)
         self.math_model_result.set_determinate_info(self.math_model_tab.r2)
         self.math_model_result.set_mse(self.math_model_tab.mse)
+
+    def __save_model(self):
+        self.math_model_result.save_model(self.math_model_tab.saver)
 
 
 if __name__ == "__main__":

@@ -41,7 +41,8 @@ def get_new_x(df: pd.DataFrame, text: str) -> pd.DataFrame:
     for column in new_columns:
         d[column[1]] = column[0] + ', ' + column[1]
 
-    new_keys = list(map(drop_a, text.split('+')))
+    new_keys = map(drop_a, text.split('+'))
+    new_keys = map(lambda x: x.strip(), new_keys)
     new_keys = list(filter(lambda x: True if x else False, new_keys))
 
     new_X = pd.DataFrame()

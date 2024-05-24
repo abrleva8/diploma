@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from PyQt6.QtWidgets import QWidget, QLayout, QTableWidget, QHeaderView, QAbstractItemView, QTableWidgetItem, \
-    QGridLayout, QVBoxLayout, QHBoxLayout, QLabel
+    QGridLayout, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFileDialog, QMessageBox
 
 
 class MathModelResultWidget(QWidget):
@@ -20,9 +20,11 @@ class MathModelResultWidget(QWidget):
     def set_table_widget(self, df: pd.DataFrame):
         df = df.round(2)
         self.table.clear()
+        self.table.setRowCount(0)
         headers = df.columns.values.tolist()
         self.table.setColumnCount(len(headers))
         self.table.setHorizontalHeaderLabels(headers)
+
         for i, row in df.iterrows():
             # Добавление строки
             self.table.setRowCount(self.table.rowCount() + 1)
@@ -63,7 +65,11 @@ class MathModelResultWidget(QWidget):
         table_layout = QGridLayout()
         info_layout = QVBoxLayout()
 
+        self.save_model_btn = QPushButton('Сохранить')
+        self.save_model_btn.setObjectName('save_model_btn')
+
         table_layout.addWidget(self.table, 0, 0)
+        table_layout.addWidget(self.save_model_btn, 1, 0)
 
         self.fisher_lbl = QLabel()
         self.fisher_table_lbl = QLabel()
@@ -81,6 +87,14 @@ class MathModelResultWidget(QWidget):
         layout.addLayout(info_layout)
 
         return layout
+
+    def save_model(self, saver):
+        filename = QFileDialog.getSaveFileName(self, 'Сохранение данных', filter='*.pkl')
+        if not filename[0]:
+            QMessageBox.warning(self, 'Сохранение данных', 'Вы не выбрали имя для сохранения')
+            return
+        saver.save(filename[0])
+        QMessageBox.information(self, 'Сохранение данных', 'Модель успешно сохранена!')
 
 
 if __name__ == "__main__":

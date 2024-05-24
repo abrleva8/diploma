@@ -11,8 +11,9 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import Pipeline
 
-from interface.qEDASettingsWindow import EDASettingsWindow
+from interface.qResearcherWindows.qEDASettingsWindow import EDASettingsWindow
 from interface.qNormalAnalystWindow import NormalAnalystWindow
+from math_model.model_loader import ModelLoader
 from math_model.data_frame_manager import DataFrameManager
 from math_model.transformer import CustomTransformer
 from utils.eq_creator import get_linear, get_quad, get_new_x
@@ -41,7 +42,7 @@ def dataframe_generation_from_table(table, columns: list[str] = None) -> pd.Data
 
 
 class MathModelWidget(QWidget):
-    table_sgn = pyqtSignal(QTableWidget)
+    # saver_sgn = pyqtSignal(ModelLoader, name='saver_sgn')
 
     def __init__(self):
         super(QWidget, self).__init__()
@@ -127,7 +128,7 @@ class MathModelWidget(QWidget):
         self.result_txt_ed = QLineEdit()
         self.result_txt_ed.setEnabled(False)
         self.apply_text_btn = QPushButton('Применить')
-        self.apply_text_btn.setEnabled(False)
+        # self.apply_text_btn.setEnabled(False)
         self.apply_text_btn.clicked.connect(self.__apply_btn_clicked)
 
         table_layout.addWidget(self.table)
@@ -183,9 +184,8 @@ class MathModelWidget(QWidget):
         self.linear_rb.setEnabled(True)
         self.quad_rb.setEnabled(True)
         self.user_rb.setEnabled(True)
-        self.apply_text_btn.setEnabled(True)
 
-    def __save_df_btn_clicked(self):
+    def __save_df_btn_clicked(self) -> None:
         filename = QFileDialog.getSaveFileName(self, 'Сохранение данных', filter='*.csv')
         if not filename[0]:
             QMessageBox.warning(self, 'Сохранение данных', 'Вы не выбрали имя для сохранения')
@@ -193,7 +193,7 @@ class MathModelWidget(QWidget):
         self.df_manager.save_df(filename[0])
         QMessageBox.information(self, 'Сохранение данных', 'Данные успешно сохранены')
 
-    def __apply_btn_clicked(self):
+    def __apply_btn_clicked(self) -> None:
         text = self.result_txt_ed.text()
         new_X = get_new_x(self.df_manager.df, text)
 
@@ -213,6 +213,9 @@ class MathModelWidget(QWidget):
 
         # TODO: create a class for the next code lines
         pipeline.fit(self.df_manager.df, y)
+
+        self.saver = ModelLoader(pipeline, self.result)
+
         y_pred = pipeline.predict(self.df_manager.df)
 
         pearson_corr = stats.pearsonr(y, y_pred)

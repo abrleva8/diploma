@@ -130,5 +130,3 @@ class DataWidget(QWidget):
             for j in range(df.shape[1]):
                 val = df.iloc[i, j]
                 self.table.setItem(i, j, QTableWidgetItem(str(val)))
-
-

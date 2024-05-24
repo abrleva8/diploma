@@ -1,5 +1,5 @@
 from interface.qAppWindows.qMainAppWindow import QMainAppWindow
-from interface.qResearcherTabWidget import ResearcherTabWidget
+from interface.qResearcherWindows.qResearcherTabWidget import ResearcherTabWidget
 
 
 class ResearcherWindow(QMainAppWindow):

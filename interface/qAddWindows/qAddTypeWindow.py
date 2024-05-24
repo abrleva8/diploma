@@ -1,7 +1,6 @@
 from sqlite3 import IntegrityError
 
-from PyQt6.QtWidgets import (QWidget, QMainWindow, QGridLayout, QLabel, QApplication, QLineEdit, QComboBox,
-                             QPushButton, QMessageBox)
+from PyQt6.QtWidgets import (QWidget, QGridLayout, QLabel, QApplication, QLineEdit, QPushButton, QMessageBox)
 
 from database import material_bd
 from interface.qAppWindows.qAppWindow import QAppWindow
@@ -34,7 +33,7 @@ class AddTypeWindow(QAppWindow):
 
         layout.addWidget(self.type_lbl, 0, 0)
         layout.addWidget(self.type_input, 0, 1)
-        layout.addWidget(self.add_цbutton, 1, 0, 2, 0)
+        layout.addWidget(self.add_button, 1, 0, 2, 0)
 
         return layout
 
