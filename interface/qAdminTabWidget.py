@@ -1,7 +1,8 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QMessageBox
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget
 
 from database import material_bd
 from interface.qMaterialWidget import MaterialWidget
+from interface.qResearchWidget import ResearchWidget
 from interface.qUserWidget import UserWidget
 
 
@@ -13,15 +14,16 @@ class AdminWidgets(QWidget):
         # Initialize tab screen
         self.tabs = QTabWidget()
         self.user_tab = UserWidget()
-        self.materials = MaterialWidget()
-        self.tabs.resize(300, 200)
+        self.materials_tab = MaterialWidget()
+        self.research_tab = ResearchWidget()
+        # self.tabs.resize(300, 200)
 
         self.tabs.tabBarClicked.connect(self.__material_tab_clicked)
 
         # Add tabs
         self.tabs.addTab(self.user_tab, "Пользователи")
-        self.tabs.addTab(self.materials, "Материалы")
-        # self.tabs.addTab(self.tab3, "Отчёты")
+        self.tabs.addTab(self.materials_tab, "Материалы")
+        self.tabs.addTab(self.research_tab, "Эксперименты")
 
         # Add tabs to widget
         self.layout.addWidget(self.tabs)
@@ -33,4 +35,4 @@ class AdminWidgets(QWidget):
             case 0:
                 self.user_tab.init_users_combo_box()
             case 1:
-                self.materials.init_combox()
+                self.materials_tab.init_combox()

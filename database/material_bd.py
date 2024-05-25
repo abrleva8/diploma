@@ -4,7 +4,7 @@ import sqlite3
 
 class MaterialDataBaseWorker:
     def __init__(self):
-        # path = os.path.join(os.getcwd(), 'data', 'materials.db')
+        # path = os.path.join(os.getcwd(), 'data', 'materials_tab.db')
         path = r'C:\Users\Ilia\PycharmProjects\diploma\data\materials.db'
         self.conn = sqlite3.connect(path)
         self.cur = self.conn.cursor()
@@ -257,6 +257,22 @@ class MaterialDataBaseWorker:
                          f'SET name = (?), id_unit = (?)\n'
                          f'WHERE name = (?) AND id_unit = (?)',
                          (new_property_name, new_id_unit, current_property_name, curr_id_unit))
+
+    def get_raw_researches(self):
+
+        self.cur.execute("""
+            SELECT research.id_research AS `номер_опыта`, raw_material.name AS `материал`, condition.name AS `условие`, condition_in_set.value AS `значение_условия`,
+            result.parameter_name AS `имя_результат`, research.value AS `результат_эксперимента`
+            FROM research
+            INNER JOIN condition_in_set ON condition_in_set.id_condition_set = research.id_condition_set
+            INNER JOIN condition ON condition.id_condition = condition_in_set.id_condition
+            INNER JOIN raw_material ON research.id_raw_material = raw_material.id_raw_material
+            INNER JOIN result ON research.id_result = result.id_result;
+        """)
+
+        head = [d[0] for d in self.cur.description]
+
+        return self.cur.fetchall(), head
 
     # TODO: подумать как это будет выглядеть в общем виде
     def get_full_dataset(self, filter_type: str, result: str):

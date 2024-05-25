@@ -11,6 +11,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import Pipeline
 
+from data_classes.model_info import ModelInfo
 from interface.qResearcherWindows.qEDASettingsWindow import EDASettingsWindow
 from interface.qNormalAnalystWindow import NormalAnalystWindow
 from math_model.model_loader import ModelLoader
@@ -53,6 +54,11 @@ class MathModelWidget(QWidget):
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.layout = self.__get_layout()
         self.setLayout(self.layout)
+
+        self.saver = ModelLoader()
+
+    def set_model_loader(self, loader: ModelLoader):
+        self.saver = loader
 
     def set_table_widget(self, table: QTableWidget):
         num_rows = table.rowCount()
@@ -201,11 +207,13 @@ class MathModelWidget(QWidget):
         text = self.result_txt_ed.text()
         new_X = get_new_x(self.df_manager.df, text)
 
-        custom_transformer = CustomTransformer(column_names=self.df_manager.df.columns, text=text)
+        custom_transformer = CustomTransformer(column_names=self.df_manager.get_columns(), text=text)
+
         lr = LinearRegression()
+
         preprocessor = ColumnTransformer(
             transformers=[
-                ('custom', custom_transformer, self.df_manager.df.columns)
+                ('custom', custom_transformer, self.df_manager.df.columns[:-1])
             ]
         )
         # Assuming 'model' is your machine learning model (e.g., RandomForestClassifier)
@@ -216,9 +224,7 @@ class MathModelWidget(QWidget):
         self.result = pg.linear_regression(new_X, y)
 
         # TODO: create a class for the next code lines
-        pipeline.fit(self.df_manager.df, y)
-
-        self.saver = ModelLoader(pipeline, self.result)
+        pipeline.fit(self.df_manager.X(), y)
 
         y_pred = pipeline.predict(self.df_manager.df)
 
@@ -235,6 +241,10 @@ class MathModelWidget(QWidget):
         self.fisher_table = stats.f.ppf(q=0.95, dfn=dfn, dfd=dfd)
         self.r2 = pipeline.score(self.df_manager.df, y)
         self.mse = mean_squared_error(y, y_pred)
+
+        self.model_info = ModelInfo(self.result, self.fisher, self.fisher_table, self.r2, self.mse)
+
+        self.saver = ModelLoader(pipeline, self.model_info)
 
 
 if __name__ == "__main__":

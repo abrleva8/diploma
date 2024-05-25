@@ -7,7 +7,7 @@ class AdminWindow(QMainAppWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Администратор")
-        self.setFixedSize(800, 400)
+        # self.setFixedSize(800, 400)
 
         self.tab_widget = interface.qAdminTabWidget.AdminWidgets(self)
         self.setCentralWidget(self.tab_widget)

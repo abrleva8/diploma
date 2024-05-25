@@ -15,7 +15,6 @@ class ResearcherTabWidget(QWidget):
 
         # Initialize tab screen
         self.tabs = QTabWidget()
-        self.tabs.resize(300, 200)
         self.data_tab = DataTabWidget()
         self.math_model_tab = MathModelWidget(self.df_manager)
         self.math_model_result = MathModelResultWidget()
@@ -28,6 +27,9 @@ class ResearcherTabWidget(QWidget):
         # Connect events
         self.child_confirm_data_btn = self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data')
         self.child_confirm_data_btn.clicked.connect(self.__apply_dataset)
+
+        self.child_load_model_btn = self.math_model_result.parentWidget().findChild(QPushButton, 'load_model_btn')
+        self.child_load_model_btn.clicked.connect(self.__load_model)
 
         self.child_save_model_btn = self.math_model_result.parentWidget().findChild(QPushButton, 'save_model_btn')
         self.child_save_model_btn.clicked.connect(self.__save_model)
@@ -51,13 +53,21 @@ class ResearcherTabWidget(QWidget):
         self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data').setEnabled(False)
 
     def __apply_result(self):
-        self.math_model_result.set_table_widget(self.math_model_tab.result)
-        self.math_model_result.set_fisher_info(self.math_model_tab.fisher, self.math_model_tab.fisher_table)
-        self.math_model_result.set_determinate_info(self.math_model_tab.r2)
-        self.math_model_result.set_mse(self.math_model_tab.mse)
+        self.math_model_result.set_table_widget(self.math_model_tab.model_info.pingouin_result)
+        self.math_model_result.set_fisher_info(self.math_model_tab.model_info.fisher_result,
+                                               self.math_model_tab.model_info.fisher_table)
+        self.math_model_result.set_determinate_info(self.math_model_tab.model_info.r2)
+        self.math_model_result.set_mse(self.math_model_tab.model_info.mse)
 
     def __save_model(self):
         self.math_model_result.save_model(self.math_model_tab.saver)
+
+    def __load_model(self):
+        model_loader = self.math_model_result.load_model(self.math_model_tab.saver)
+        # self.math_model_tab.set_model_loader(model_loader)
+        self.math_model_tab.model_info = model_loader.model_info
+
+        self.__apply_result()
 
 
 if __name__ == "__main__":

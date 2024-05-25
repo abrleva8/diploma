@@ -3,6 +3,9 @@ import pandas as pd
 
 from PyQt6.QtWidgets import QWidget, QLayout, QTableWidget, QHeaderView, QAbstractItemView, QTableWidgetItem, \
     QGridLayout, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFileDialog, QMessageBox
+from sklearn.pipeline import Pipeline
+
+from math_model.model_loader import ModelLoader
 
 
 class MathModelResultWidget(QWidget):
@@ -65,11 +68,15 @@ class MathModelResultWidget(QWidget):
         table_layout = QGridLayout()
         info_layout = QVBoxLayout()
 
+        self.load_model_btn = QPushButton('Загрузить')
+        self.load_model_btn.setObjectName('load_model_btn')
+
         self.save_model_btn = QPushButton('Сохранить')
         self.save_model_btn.setObjectName('save_model_btn')
 
         table_layout.addWidget(self.table, 0, 0)
-        table_layout.addWidget(self.save_model_btn, 1, 0)
+        table_layout.addWidget(self.load_model_btn, 1, 0)
+        table_layout.addWidget(self.save_model_btn, 2, 0)
 
         self.fisher_lbl = QLabel()
         self.fisher_table_lbl = QLabel()
@@ -88,13 +95,21 @@ class MathModelResultWidget(QWidget):
 
         return layout
 
-    def save_model(self, saver):
+    def save_model(self, saver: ModelLoader):
         filename = QFileDialog.getSaveFileName(self, 'Сохранение данных', filter='*.pkl')
         if not filename[0]:
             QMessageBox.warning(self, 'Сохранение данных', 'Вы не выбрали имя для сохранения')
             return
         saver.save(filename[0])
         QMessageBox.information(self, 'Сохранение данных', 'Модель успешно сохранена!')
+
+    def load_model(self, saver: ModelLoader) -> ModelLoader | None:
+        filename = QFileDialog.getOpenFileName(self, 'Загрузка данных', filter='*.pkl')
+        if not filename[0]:
+            QMessageBox.warning(self, 'Загрузка данных', 'Вы не выбрали имя для загрузки')
+            return
+        pipeline = saver.load(filename[0])
+        return pipeline
 
 
 if __name__ == "__main__":
