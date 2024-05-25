@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QPushButton
 
-from interface.qResearcherWindows.qDataWidget import DataWidget
+from interface.qResearcherWindows.qDataWidget import DataTabWidget
 from interface.qResearcherWindows.qMathModelResultWidget import MathModelResultWidget
 from interface.qResearcherWindows.qMathModelWidget import MathModelWidget, dataframe_generation_from_table
 from math_model.data_frame_manager import DataFrameManager
@@ -11,11 +11,13 @@ class ResearcherTabWidget(QWidget):
         super(QWidget, self).__init__(parent)
         self.layout = QVBoxLayout(self)
 
+        self.df_manager: DataFrameManager = None
+
         # Initialize tab screen
         self.tabs = QTabWidget()
         self.tabs.resize(300, 200)
-        self.data_tab = DataWidget()
-        self.math_model_tab = MathModelWidget()
+        self.data_tab = DataTabWidget()
+        self.math_model_tab = MathModelWidget(self.df_manager)
         self.math_model_result = MathModelResultWidget()
 
         # Add tabs
@@ -42,8 +44,9 @@ class ResearcherTabWidget(QWidget):
         self.math_model_tab.change_header(self.data_tab.table)
         header_labels = [self.data_tab.table.horizontalHeaderItem(i).text()
                          for i in range(self.data_tab.table.columnCount())]
-        self.math_model_tab.df_manager = DataFrameManager(dataframe_generation_from_table(self.data_tab.table,
-                                                                                          header_labels))
+        self.df_manager = DataFrameManager(dataframe_generation_from_table(self.data_tab.table,
+                                                                           header_labels))
+        self.math_model_tab.df_manager = self.df_manager
         self.math_model_tab.save_df_btn.setEnabled(True)
         self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data').setEnabled(False)
 

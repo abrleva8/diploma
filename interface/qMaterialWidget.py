@@ -202,7 +202,7 @@ class MaterialWidget(QWidget):
         self.material_combo_box.addItems(materials)
 
     def __init_properties_combo_box(self):
-        properties = self.math_operator_worker.get_properties()
+        properties, _ = self.math_operator_worker.get_properties()
         properties = list(map(lambda x: x[0], properties))
         self.property_combo_box.clear()
         self.property_combo_box.addItems(properties)

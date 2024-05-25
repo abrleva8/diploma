@@ -4,10 +4,11 @@ from PyQt6.QtWidgets import QWidget, QLayout, QGridLayout, QHBoxLayout, QPushBut
     QHeaderView
 
 from database import material_bd
+from math_model.data_frame_manager import DataFrameManager
 
 
 # TODO: переписать через findChild
-class DataWidget(QWidget):
+class DataTabWidget(QWidget):
     def __init__(self):
         super(QWidget, self).__init__()
 
@@ -91,11 +92,14 @@ class DataWidget(QWidget):
         type_material = self.type_cmb.currentText()
         keys, data = self.math_operator_worker.get_full_dataset(type_material, result)
 
-        # self.df_manager = DataFrameManager(pd.DataFrame(data=data, columns=keys))
+        data_units, columns = self.math_operator_worker.get_params_with_units()
+        df_units = pd.DataFrame(data=data_units, columns=columns)
+        self.df_manager = DataFrameManager(df_units)
+        rename_dict = self.df_manager.rename_dict()
 
         self.table.setRowCount(len(data))
         self.table.setColumnCount(len(data[0]))
-        self.table.setHorizontalHeaderLabels(keys)
+        self.table.setHorizontalHeaderLabels([rename_dict.get(key.lower(), key) for key in keys])
 
         for i, row in enumerate(data):
             for j, val in enumerate(row):

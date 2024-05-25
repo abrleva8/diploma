@@ -44,10 +44,10 @@ def dataframe_generation_from_table(table, columns: list[str] = None) -> pd.Data
 class MathModelWidget(QWidget):
     # saver_sgn = pyqtSignal(ModelLoader, name='saver_sgn')
 
-    def __init__(self):
+    def __init__(self, df_manager: DataFrameManager):
         super(QWidget, self).__init__()
         self.model_size = None
-        self.df_manager: DataFrameManager = None
+        self.df_manager = df_manager
         self.table = QTableWidget(self)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)

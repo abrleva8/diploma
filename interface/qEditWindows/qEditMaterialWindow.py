@@ -78,7 +78,7 @@ class EditMaterialWindow(QAppWindow):
 
     def set_labels(self, layout: QGridLayout):
         if self.properties is None:
-            self.properties = self.math_operator_worker.get_properties(unit=True)
+            self.properties, _ = self.math_operator_worker.get_properties(unit=True)
 
         for index, proper in enumerate(self.properties):
             q_label = QLabel(proper[0])

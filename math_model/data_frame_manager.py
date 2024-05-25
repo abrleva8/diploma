@@ -19,5 +19,9 @@ class DataFrameManager:
         self.new_columns = {column: column.split(',')[0] for column in columns}
         self.old_columns = {column.split(',')[0]: column for column in self.new_columns.keys()}
 
-
-
+    def rename_dict(self) -> dict:
+        new_columns = []
+        for (index, a) in self.df.iterrows():
+            res = ': '.join([a[column] for column in self.df.columns])
+            new_columns.append(res)
+        return dict(zip(self.df['name'], new_columns))

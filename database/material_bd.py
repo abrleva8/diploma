@@ -29,12 +29,15 @@ class MaterialDataBaseWorker:
         self.cur.execute("INSERT INTO raw_material(name, id_type) VALUES (?, ?)", (material_name, type_id))
         self.conn.commit()
 
-    def get_properties(self, unit: bool = False) -> list[tuple[str, str]]:
+    def get_properties(self, unit: bool = False, return_head: bool = False) -> tuple[list[tuple[str, str]], list[str]]:
         if unit:
             self.cur.execute("SELECT name, denote FROM property INNER JOIN unit ON property.id_unit = unit.id_unit")
         else:
             self.cur.execute("SELECT name FROM property")
-        return self.cur.fetchall()
+
+        head = [d[0] for d in self.cur.description] if return_head else None
+
+        return self.cur.fetchall(), head
 
     def get_types(self):
         self.cur.execute("SELECT type_name FROM type")
@@ -173,9 +176,21 @@ class MaterialDataBaseWorker:
         self.cur.execute(f"SELECT id_unit FROM unit WHERE denote = '{unit}'")
         return self.cur.fetchall()
 
-    def get_results(self):
-        self.cur.execute("SELECT parameter_name FROM result")
+    def get_results(self, unit: bool = False):
+        if unit:
+            self.cur.execute("SELECT parameter_name, denote FROM result INNER JOIN unit ON result.id_unit = "
+                             "unit.id_unit")
+        else:
+            self.cur.execute("SELECT parameter_name FROM result")
         return self.cur.fetchall()
+
+    def get_params_with_units(self):
+        self.cur.execute("SELECT name, denote FROM property INNER JOIN unit ON property.id_unit = unit.id_unit\n"
+                         "UNION\n"
+                         "SELECT parameter_name, denote FROM result INNER JOIN unit ON result.id_unit = unit.id_unit\n"
+                         "UNION\n"
+                         "SELECT name, denote FROM condition INNER JOIN unit ON condition.id_unit = unit.id_unit")
+        return self.cur.fetchall(), [d[0] for d in self.cur.description]
 
     def edit_unit(self, curr_unit_denote: str, new_unit_denote: str):
         self.cur.execute(f"UPDATE unit SET denote = (?) WHERE denote = (?)", (new_unit_denote, curr_unit_denote))
