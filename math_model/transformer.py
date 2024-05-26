@@ -13,8 +13,9 @@ class CustomTransformer(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+        # X.to_csv('X.csv', index=False)
         X_transformed = self.__get_new_x(X, self.text)
-
+        # X_transformed.to_csv('X_transformed.csv', index=False)
         return X_transformed
 
     @classmethod
@@ -33,7 +34,7 @@ class CustomTransformer(BaseEstimator, TransformerMixin):
         return mult
 
     def __get_new_columns(self, df: pd.DataFrame, text: str) -> tuple[list[str], dict]:
-        new_columns = df.columns[2:].str.split(', ')
+        new_columns = df.columns.str.split(', ')
 
         d = {}
         # print(new_columns)

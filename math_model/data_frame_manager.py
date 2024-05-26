@@ -10,10 +10,10 @@ class DataFrameManager:
         return self.df[self.df.columns[-1]]
 
     def get_columns(self):
-        return self.df.columns
+        return self.df.columns[2:-1]
 
     def X(self):
-        return self.df.drop(self.df.columns[-1], axis=1)
+        return self.df[self.df.columns[2:-1]]
 
     def save_df(self, filename: str):
         self.df = self.df.rename(columns=self.new_columns)

@@ -1,21 +1,18 @@
 import pandas as pd
 import pingouin as pg
-
-from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractItemView, QHeaderView, QHBoxLayout, \
     QPushButton, QGridLayout, QLabel, QRadioButton, QLineEdit, QButtonGroup, QFileDialog, QMessageBox
 from scipy import stats
 from sklearn.compose import ColumnTransformer
-
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import Pipeline
 
 from data_classes.model_info import ModelInfo
-from interface.qResearcherWindows.qEDASettingsWindow import EDASettingsWindow
 from interface.qNormalAnalystWindow import NormalAnalystWindow
-from math_model.model_loader import ModelLoader
+from interface.qResearcherWindows.qEDASettingsWindow import EDASettingsWindow
 from math_model.data_frame_manager import DataFrameManager
+from math_model.model_loader import ModelLoader
 from math_model.transformer import CustomTransformer
 from utils.eq_creator import get_linear, get_quad, get_new_x
 
@@ -57,8 +54,8 @@ class MathModelWidget(QWidget):
 
         self.saver = ModelLoader()
 
-    def set_model_loader(self, loader: ModelLoader):
-        self.saver = loader
+    # def set_model_loader(self, loader: ModelLoader):
+    #     self.saver = loader
 
     def set_table_widget(self, table: QTableWidget):
         num_rows = table.rowCount()
@@ -213,7 +210,7 @@ class MathModelWidget(QWidget):
 
         preprocessor = ColumnTransformer(
             transformers=[
-                ('custom', custom_transformer, self.df_manager.df.columns[:-1])
+                ('custom', custom_transformer, self.df_manager.get_columns())
             ]
         )
         # Assuming 'model' is your machine learning model (e.g., RandomForestClassifier)
@@ -226,7 +223,7 @@ class MathModelWidget(QWidget):
         # TODO: create a class for the next code lines
         pipeline.fit(self.df_manager.X(), y)
 
-        y_pred = pipeline.predict(self.df_manager.df)
+        y_pred = pipeline.predict(self.df_manager.df[self.df_manager.get_columns()])
 
         pearson_corr = stats.pearsonr(y, y_pred)
         corr = pearson_corr.statistic
@@ -239,7 +236,7 @@ class MathModelWidget(QWidget):
 
         self.fisher = corr ** 2 / (1 - corr ** 2) * (dfn / dfd)
         self.fisher_table = stats.f.ppf(q=0.95, dfn=dfn, dfd=dfd)
-        self.r2 = pipeline.score(self.df_manager.df, y)
+        self.r2 = pipeline.score(self.df_manager.df[self.df_manager.get_columns()], y)
         self.mse = mean_squared_error(y, y_pred)
 
         self.model_info = ModelInfo(self.result, self.fisher, self.fisher_table, self.r2, self.mse)

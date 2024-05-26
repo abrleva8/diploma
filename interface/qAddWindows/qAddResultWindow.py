@@ -1,6 +1,7 @@
 from sqlite3 import IntegrityError
 
-from PyQt6.QtWidgets import QMainWindow, QWidget, QGridLayout, QLabel, QLineEdit, QComboBox, QPushButton, QMessageBox
+from PyQt6.QtWidgets import QWidget, QGridLayout, QLabel, QLineEdit, QComboBox, QPushButton, QMessageBox
+
 from database import material_bd
 from interface.qAppWindows.qAppWindow import QAppWindow
 
@@ -16,8 +17,6 @@ class AddResultWindow(QAppWindow):
         main_widget.setLayout(layout)
         self.setCentralWidget(main_widget)
 
-        self._center()
-
         self.math_operator_worker = material_bd.MaterialDataBaseWorker()
         self.__init_unit_combobox()
 
@@ -25,29 +24,27 @@ class AddResultWindow(QAppWindow):
         layout = QGridLayout()
 
         self.result_label = QLabel("Введите результат")
-        layout.addWidget(self.result_label, 0, 0)
 
         self.result_input = QLineEdit("")
         self.result_input.setPlaceholderText('Введите новый результат')
         self.result_input.textChanged.connect(self.__input_add_new_result_changed)
-        layout.addWidget(self.result_input, 0, 1)
 
         self.unit_label = QLabel("Выберите единицу измерения")
-        layout.addWidget(self.unit_label, 1, 0)
 
         self.unit_combobox = QComboBox(self)
-        layout.addWidget(self.unit_combobox, 1, 1)
 
         self.add_button = QPushButton(self)
         self.add_button.setText("Добавить результат")
         self.add_button.setEnabled(False)
         self.add_button.clicked.connect(self.__add_button_clicked)
+
+        layout.addWidget(self.result_label, 0, 0)
+        layout.addWidget(self.result_input, 0, 1)
+        layout.addWidget(self.unit_label, 1, 0)
+        layout.addWidget(self.unit_combobox, 1, 1)
         layout.addWidget(self.add_button, 2, 0, 2, 0)
 
         return layout
-
-    def _center(self):
-        pass
 
     def __input_add_new_result_changed(self):
         self.add_button.setEnabled(bool(self.result_input.text() and self.unit_combobox.currentText()))

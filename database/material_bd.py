@@ -17,6 +17,30 @@ class MaterialDataBaseWorker:
         except AttributeError:
             pass
 
+    def get_condition_set(self, condition_id_lst: list[int] = None, values_lst: list[float] = None):
+
+        query = "SELECT id_condition_set\n " \
+                "FROM condition_in_set\n " \
+                "WHERE id_condition = (?) AND value = (?)"
+        size = len(condition_id_lst)
+
+        query = [query] * size
+
+        query = 'INTERSECT\n '.join(query)
+
+        res = []
+        for a, b in zip(condition_id_lst, values_lst):
+            res.append(a)
+            res.append(b)
+
+        self.cur.execute(query, res)
+
+        return self.cur.fetchall()
+
+    def get_max_condition_set(self):
+        self.cur.execute("SELECT MAX(condition_in_set.id_condition_set) FROM condition_in_set")
+        return self.cur.fetchall()
+
     def get_materials(self):
         self.cur.execute("SELECT name FROM raw_material")
         return self.cur.fetchall()
@@ -48,8 +72,11 @@ class MaterialDataBaseWorker:
         self.cur.execute("INSERT INTO property(name, id_unit) VALUES (?,?)", (name, id_unit))
         self.conn.commit()
 
-    def get_conditions(self):
-        self.cur.execute("SELECT name FROM condition")
+    def get_conditions(self, unit: bool = False) -> list[tuple[str, str]]:
+        if unit:
+            self.cur.execute("SELECT name, denote FROM condition INNER JOIN unit ON condition.id_unit = unit.id_unit")
+        else:
+            self.cur.execute("SELECT name FROM condition")
         return self.cur.fetchall()
 
     def insert_condition(self, name, unit):
@@ -57,10 +84,39 @@ class MaterialDataBaseWorker:
         self.cur.execute("INSERT INTO condition(name, id_unit) VALUES (?, ?)", (name, id_unit))
         self.conn.commit()
 
+    def insert_condition_set(self, condition_id_lst: list[int] = None, values_lst: list[float] = None) -> None:
+
+        query = "INSERT INTO condition_in_set(id_condition_set, id_condition, value) VALUES\n" \
+
+        size = len(condition_id_lst)
+
+        max_value = self.get_max_condition_set()[0][0]
+
+        values = [f"({max_value + 1}, ?, ?)"] * size
+
+        values = ", ".join(values)
+        query += values
+
+        # query = 'INTERSECT\n '.join(query)
+
+        res = []
+        for a, b in zip(condition_id_lst, values_lst):
+            res.append(a)
+            res.append(b)
+
+        self.cur.execute(query, res)
+        self.conn.commit()
+
     def insert_result(self, parameter_name, unit):
         id_unit = self.get_id_unit(unit)[0][0]
         self.cur.execute("INSERT INTO result(parameter_name, id_unit) VALUES (?, ?)",
                          (parameter_name, id_unit))
+        self.conn.commit()
+
+    def insert_research(self, id_result: int, id_raw_material: int,
+                        id_condition_set: int, id_research: int, value: float):
+        self.cur.execute("INSERT INTO research(id_result, id_raw_material, id_condition_set, id_research, value)"
+                         "VALUES (?, ?, ?, ?, ?)", (id_result, id_raw_material, id_condition_set, id_research, value))
         self.conn.commit()
 
     def insert_unit(self, unit_denote):
@@ -110,6 +166,12 @@ class MaterialDataBaseWorker:
                          "WHERE name = (?);", (material_name,))
         return self.cur.fetchall()
 
+    def get_id_condition_by_condition_name(self, condition_name: str):
+        self.cur.execute("SELECT id_condition\n"
+                         "FROM condition\n"
+                         "WHERE condition.name = (?);", (condition_name,))
+        return self.cur.fetchall()
+
     def get_id_material_by_material_name(self, material_name):
         self.cur.execute("SELECT id_raw_material\n"
                          "FROM raw_material\n"
@@ -120,6 +182,10 @@ class MaterialDataBaseWorker:
         self.cur.execute("SELECT id_property\n"
                          "FROM property\n"
                          "WHERE property.name = (?);", (property_name,))
+        return self.cur.fetchall()
+
+    def get_current_id_research(self):
+        self.cur.execute("SELECT MAX(id_research) FROM research")
         return self.cur.fetchall()
 
     def get_result_id_by_result_name(self, result_name):

@@ -18,8 +18,6 @@ class AddPropertyWindow(QAppWindow):
         main_widget.setLayout(layout)
         self.setCentralWidget(main_widget)
 
-        self._center()
-
         self.math_operator_worker = material_bd.MaterialDataBaseWorker()
         self._init_unit_combobox()
 
@@ -27,29 +25,27 @@ class AddPropertyWindow(QAppWindow):
         layout = QGridLayout()
 
         self.property_label = QLabel("Введите свойство")
-        layout.addWidget(self.property_label, 0, 0)
 
         self.property_input = QLineEdit("")
         self.property_input.setPlaceholderText('Введите новое свойство')
         self.property_input.textChanged.connect(self.__input_add_new_property_changed)
-        layout.addWidget(self.property_input, 0, 1)
 
         self.unit_label = QLabel("Выберите единицу измерения")
-        layout.addWidget(self.unit_label, 1, 0)
 
         self.unit_combobox = QComboBox(self)
-        layout.addWidget(self.unit_combobox, 1, 1)
 
         self.add_button = QPushButton(self)
         self.add_button.setText("Добавить свойство")
         self.add_button.setEnabled(False)
         self.add_button.clicked.connect(self._add_button_clicked)
+
+        layout.addWidget(self.property_label, 0, 0)
+        layout.addWidget(self.property_input, 0, 1)
+        layout.addWidget(self.unit_label, 1, 0)
+        layout.addWidget(self.unit_combobox, 1, 1)
         layout.addWidget(self.add_button, 2, 0, 2, 0)
 
         return layout
-
-    def _center(self):
-        pass
 
     def __input_add_new_property_changed(self):
         self.add_button.setEnabled(bool(self.property_input.text() and self.unit_combobox.currentText()))

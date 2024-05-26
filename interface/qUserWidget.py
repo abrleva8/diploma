@@ -1,5 +1,5 @@
 from PyQt6.QtCore import QStringListModel
-from PyQt6.QtWidgets import QWidget, QComboBox, QLayout, QGridLayout, QLineEdit, QPushButton, QMessageBox
+from PyQt6.QtWidgets import QWidget, QComboBox, QLayout, QGridLayout, QPushButton, QMessageBox
 
 from database import admin_bd
 from interface.qAddWindows.qAddUserWindow import AddUserWindow

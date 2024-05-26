@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QWidget, QGridLayout, QTableWidget, QAbstractItemVie
     QHBoxLayout, QVBoxLayout, QPushButton, QLayout
 
 from database.material_bd import MaterialDataBaseWorker
+from interface.qAddWindows.qAddResearchWindow import AddResearchWindow
 from math_model.data_frame_manager import DataFrameManager
 
 
@@ -34,6 +35,10 @@ class ResearchWidget(QWidget):
         add_research_btn = QPushButton('Добавить эксперимент')
         edit_research_btn = QPushButton('Редактировать эксперимент')
         delete_research_btn = QPushButton('Удалить эксперимент')
+
+        add_research_btn.clicked.connect(self.__add_button_clicked)
+        # edit_research_btn.clicked.connect(self.__edit_button_clicked)
+        # delete_research_btn.clicked.connect(self.__delete_button_clicked)
 
         layout.addWidget(add_research_btn)
         layout.addWidget(edit_research_btn)
@@ -70,3 +75,7 @@ class ResearchWidget(QWidget):
         for i, row in data.iterrows():
             for j, val in enumerate(row):
                 self.table.setItem(i, j, QTableWidgetItem(str(val)))
+
+    def __add_button_clicked(self):
+        self.AddResultWindow = AddResearchWindow()
+        self.AddResultWindow.show()
