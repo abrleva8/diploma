@@ -18,29 +18,25 @@ class AddUnitWindow(QAppWindow):
         main_widget.setLayout(layout)
         self.setCentralWidget(main_widget)
 
-        self.__center()
-
     def __get_layout(self):
         layout = QGridLayout()
 
         self.unit_label = QLabel("Введите единицу измерения")
-        layout.addWidget(self.unit_label, 0, 0)
 
         self.unit_input = QLineEdit("")
         self.unit_input.setPlaceholderText('Введите обозначение')
         self.unit_input.textChanged.connect(self.__input_add_new_unit_changed)
-        layout.addWidget(self.unit_input, 0, 1)
 
         self.add_button = QPushButton(self)
         self.add_button.setText("Добавить единицу измерения")
         self.add_button.setEnabled(False)
         self.add_button.clicked.connect(self.__add_button_clicked)
+
+        layout.addWidget(self.unit_label, 0, 0)
+        layout.addWidget(self.unit_input, 0, 1)
         layout.addWidget(self.add_button, 1, 0, 2, 0)
 
         return layout
-
-    def __center(self):
-        pass
 
     def __input_add_new_unit_changed(self):
         self.add_button.setEnabled(bool(self.unit_input.text()))

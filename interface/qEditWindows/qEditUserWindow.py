@@ -13,7 +13,7 @@ class EditUserWindow(QAppWindow):
         self.login = login
         self.setWindowTitle(f"Изменить пользователя {self.login}")
 
-        layout = self._get_layout()
+        layout = self.__get_layout()
 
         main_widget = QWidget()
         main_widget.setLayout(layout)
@@ -22,7 +22,7 @@ class EditUserWindow(QAppWindow):
         self.math_operator_worker = admin_bd.UserDataBaseWorker()
         self._init_type_combobox()
 
-    def _get_layout(self):
+    def __get_layout(self):
         layout = QGridLayout()
 
         self.user_label = QLabel("Введите логин")

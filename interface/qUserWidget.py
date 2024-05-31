@@ -15,7 +15,7 @@ class UserWidget(QWidget):
         self.math_operator_worker = admin_bd.UserDataBaseWorker()
         self.init_users_combo_box()
 
-    def init_users_combo_box(self):
+    def init_users_combo_box(self) -> None:
         list_of_logins = self.math_operator_worker.get_logins()
         list_of_logins = list(map(lambda x: x[0], list_of_logins))
         self.users_cmbox.clear()

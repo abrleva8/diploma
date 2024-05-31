@@ -1,9 +1,10 @@
 import pandas as pd
-from PyQt6.QtWidgets import QWidget, QGridLayout, QTableWidget, QAbstractItemView, QHeaderView, QTableWidgetItem, \
+from PyQt6.QtWidgets import QWidget, QTableWidget, QAbstractItemView, QHeaderView, QTableWidgetItem, \
     QHBoxLayout, QVBoxLayout, QPushButton, QLayout
 
 from database.material_bd import MaterialDataBaseWorker
 from interface.qAddWindows.qAddResearchWindow import AddResearchWindow
+from interface.qEditWindows.qEditResearchWindow import EditResearchWindow
 from math_model.data_frame_manager import DataFrameManager
 
 
@@ -15,7 +16,7 @@ class ResearchWidget(QWidget):
         self.setLayout(self.layout)
 
         self.math_operator_worker = MaterialDataBaseWorker()
-        self.__get_researches()
+        self.get_researches()
 
     def __get_material_layout(self) -> QLayout:
         layout = QHBoxLayout()
@@ -37,8 +38,8 @@ class ResearchWidget(QWidget):
         delete_research_btn = QPushButton('Удалить эксперимент')
 
         add_research_btn.clicked.connect(self.__add_button_clicked)
-        # edit_research_btn.clicked.connect(self.__edit_button_clicked)
-        # delete_research_btn.clicked.connect(self.__delete_button_clicked)
+        edit_research_btn.clicked.connect(self.__edit_button_clicked)
+        delete_research_btn.clicked.connect(self.__delete_button_clicked)
 
         layout.addWidget(add_research_btn)
         layout.addWidget(edit_research_btn)
@@ -56,7 +57,7 @@ class ResearchWidget(QWidget):
 
         return layout
 
-    def __get_researches(self) -> None:
+    def get_researches(self) -> None:
         data, keys = self.math_operator_worker.get_raw_researches()
 
         df = pd.DataFrame(data=data, columns=keys)
@@ -72,10 +73,29 @@ class ResearchWidget(QWidget):
         self.table.setColumnCount(data.shape[1])
         self.table.setHorizontalHeaderLabels([rename_dict.get(key.lower(), key) for key in data.columns])
 
-        for i, row in data.iterrows():
-            for j, val in enumerate(row):
+        for i, row in enumerate(data.iterrows()):
+            for j, val in enumerate(row[1]):
                 self.table.setItem(i, j, QTableWidgetItem(str(val)))
 
     def __add_button_clicked(self):
-        self.AddResultWindow = AddResearchWindow()
-        self.AddResultWindow.show()
+        self.edit_research_window = AddResearchWindow()
+        self.edit_research_window.show()
+
+    def __edit_button_clicked(self):
+        row = self.table.currentRow()
+        labels = []
+        values = []
+        for c in range(self.table.columnCount()):
+            it = self.table.horizontalHeaderItem(c)
+            values.append(self.table.item(row, c).text())
+            labels.append(str(c + 1) if it is None else it.text())
+
+        values = values[1:]
+        labels = list(map(lambda x: x.split(':')[0], labels))
+        labels = labels[1:]
+        result = dict(zip(labels, values))
+        self.edit_research_window = EditResearchWindow(result, 0)
+        self.edit_research_window.show()
+
+    def __delete_button_clicked(self):
+        pass

@@ -16,7 +16,7 @@ class EditMaterialWindow(QAppWindow):
         self.properties = None
         self.__curr_material_name = curr_material_name
 
-        self.layout = self._get_layout()
+        self.layout = self.__get_layout()
 
         main_widget = QWidget()
         main_widget.setLayout(self.layout)
@@ -25,7 +25,7 @@ class EditMaterialWindow(QAppWindow):
         self.__init_material_types_cmbox()
         self.__init_values()
 
-    def _get_layout(self):
+    def __get_layout(self):
         layout = QGridLayout()
 
         self.material_lbl = QLabel("Введите новое название")

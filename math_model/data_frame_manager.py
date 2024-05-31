@@ -66,5 +66,7 @@ class DataFrameManager:
         df_result = DataFrameManager.get_results(df)
 
         df_total = pd.merge(df_conditions, df_result, on='номер_опыта', suffixes=('', '_y'))
+        columns_to_delete = filter(lambda x: x.endswith('_y'), df_total.columns)
+        df_total.drop(columns_to_delete, axis=1, inplace=True)
         df_total = df_total.drop_duplicates()
         return df_total

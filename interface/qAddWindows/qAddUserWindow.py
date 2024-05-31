@@ -19,7 +19,7 @@ class AddUserWindow(QAppWindow):
         self.setCentralWidget(main_widget)
 
         self.math_operator_worker = admin_bd.UserDataBaseWorker()
-        self._init_type_combobox()
+        self.__init_type_combobox()
 
     def _get_layout(self):
         layout = QGridLayout()
@@ -28,13 +28,13 @@ class AddUserWindow(QAppWindow):
 
         self.user_input = QLineEdit("")
         self.user_input.setPlaceholderText('Введите новый логин')
-        self.user_input.textChanged.connect(self._input_add_new_user_changed)
+        self.user_input.textChanged.connect(self.__input_add_new_user_changed)
 
         self.password_label = QLabel("Введите пароль")
 
         self.password_input = QLineEdit("")
         self.password_input.setPlaceholderText('Введите пароль')
-        self.password_input.textChanged.connect(self._input_add_new_user_changed)
+        self.password_input.textChanged.connect(self.__input_add_new_user_changed)
 
         self.user_type_label = QLabel("Выберите тип пользователя")
 
@@ -43,7 +43,7 @@ class AddUserWindow(QAppWindow):
         self.add_button = QPushButton(self)
         self.add_button.setText("Добавить логин")
         self.add_button.setEnabled(False)
-        self.add_button.clicked.connect(self._add_button_clicked)
+        self.add_button.clicked.connect(self.__add_button_clicked)
 
         layout.addWidget(self.user_label, 0, 0)
         layout.addWidget(self.user_input, 0, 1)
@@ -55,11 +55,11 @@ class AddUserWindow(QAppWindow):
 
         return layout
 
-    def _input_add_new_user_changed(self):
+    def __input_add_new_user_changed(self):
         self.add_button.setEnabled(bool(self.user_input.text() and self.password_input.text()
                                         and self.type_combobox.currentText()))
 
-    def _add_button_clicked(self):
+    def __add_button_clicked(self):
         try:
             self.math_operator_worker.insert_login(self.user_input.text(), self.password_input.text(),
                                                    self.type_combobox.currentText())
@@ -68,7 +68,7 @@ class AddUserWindow(QAppWindow):
             return
         QMessageBox.information(self, "Успех", "Пользователь успешно добавлен")
 
-    def _init_type_combobox(self):
+    def __init_type_combobox(self):
         user_types = self.math_operator_worker.get_user_types()
         user_types = list(map(lambda x: x[0], user_types))
         self.type_combobox.clear()

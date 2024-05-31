@@ -16,7 +16,6 @@ class AdminWidgets(QWidget):
         self.user_tab = UserWidget()
         self.materials_tab = MaterialWidget()
         self.research_tab = ResearchWidget()
-        # self.tabs.resize(300, 200)
 
         self.tabs.tabBarClicked.connect(self.__material_tab_clicked)
 
@@ -36,3 +35,5 @@ class AdminWidgets(QWidget):
                 self.user_tab.init_users_combo_box()
             case 1:
                 self.materials_tab.init_combox()
+            case 2:
+                self.research_tab.get_researches()
