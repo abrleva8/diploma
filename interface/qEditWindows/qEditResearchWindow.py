@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QLayout, QGridLayout, QWidget, QLabel, QComboBox, QDoubleSpinBox, QPushButton
+from PyQt6.QtWidgets import QLayout, QGridLayout, QWidget, QLabel, QComboBox, QDoubleSpinBox, QPushButton, QMessageBox
 
 from database.material_bd import MaterialDataBaseWorker
 from interface.qAppWindows.qAppWindow import QAppWindow
@@ -36,7 +36,7 @@ class EditResearchWindow(QAppWindow):
 
         self.apply_button = QPushButton()
         self.apply_button.setText("Изменить эксперимент")
-        self.apply_button.setEnabled(False)
+        # self.apply_button.setEnabled(False)
         self.apply_button.clicked.connect(self.__edit_button_clicked)
 
         layout.addWidget(raw_material_lbl, 0, 0)
@@ -58,7 +58,7 @@ class EditResearchWindow(QAppWindow):
         raw_materials = list(map(lambda x: x[0], raw_materials))
         self.raw_material_cmbox.clear()
         self.raw_material_cmbox.addItems(raw_materials)
-        self.raw_material_cmbox.setCurrentText(self.__labels.get('raw_material', None))
+        self.raw_material_cmbox.setCurrentText(self.__labels.get('материал', None))
 
     def __set_conditions(self, layout: QGridLayout) -> int | None:
         if self.__conditions is None:
@@ -107,46 +107,56 @@ class EditResearchWindow(QAppWindow):
             layout.addWidget(unit_lbl, index + start_index, 2)
 
     def __edit_button_clicked(self):
-        #     id_material = self.math_operator_worker.get_id_material_by_material_name(self.raw_material_cmbox.currentText())[0][0]
-        #     print(f'{id_material=}')
-        #
-        #     condition_id_lst, values_lst = [], []
-        #
-        #     for condition in self.__conditions:
-        #         condition_name = self.layout.parentWidget().findChild(QLabel, condition[0]).text()
-        #         condition_value = self.layout.parentWidget().findChild(QDoubleSpinBox, f'{condition[0]}_spinbox').value()
-        #
-        #         condition_id = self.math_operator_worker.get_id_condition_by_condition_name(condition_name)[0][0]
-        #
-        #         condition_id_lst.append(condition_id)
-        #         values_lst.append(condition_value)
-        #
-        #     index_lst = self.math_operator_worker.get_condition_set(condition_id_lst=condition_id_lst, values_lst=values_lst)
-        #
-        #     if len(index_lst) > 0:
-        #         print('Есть совпадения')
-        #     else:
-        #         print('Нет совпадений')
-        #         self.math_operator_worker.insert_condition_set(condition_id_lst, values_lst)
-        #         index_lst = self.math_operator_worker.get_condition_set(condition_id_lst=condition_id_lst,
-        #                                                                 values_lst=values_lst)
-        #
-        #     id_condition_set = index_lst[0][0]
-        #     print(f'{id_condition_set=}')
-        #
-        #     id_research = self.math_operator_worker.get_current_id_research()[0][0] + 1
-        #
-        #     for result in self.__results:
-        #         result_name = self.layout.parentWidget().findChild(QLabel, result[0]).text()
-        #         result_value = self.layout.parentWidget().findChild(QDoubleSpinBox, f'{result[0]}_spinbox').value()
-        #
-        #         result_id = self.math_operator_worker.get_result_id_by_result_name(result_name)[0][0]
-        #
-        #         print(f'{result_name=}, {result_value=}')
-        #
-        #         self.math_operator_worker.insert_research(result_id, id_material,
-        #                                                   id_condition_set, id_research, result_value)
-        pass
+        id_material = \
+            self.math_operator_worker.get_id_material_by_material_name(self.__labels.get('материал', None))[0][0]
+
+        condition_id_lst, old_values_lst, new_values_lst = [], [], []
+
+        for condition in self.__conditions:
+            condition_name = self.layout.parentWidget().findChild(QLabel, condition[0]).text()
+            new_condition_value = self.layout.parentWidget().findChild(QDoubleSpinBox,
+                                                                       f'{condition[0]}_spinbox').value()
+            old_condition_value = self.__labels.get(condition[0], None)
+
+            if old_condition_value is not None:
+                old_condition_value = float(old_condition_value)
+
+            condition_id = self.math_operator_worker.get_id_condition_by_condition_name(condition_name)[0][0]
+
+            condition_id_lst.append(condition_id)
+            new_values_lst.append(new_condition_value)
+            old_values_lst.append(old_condition_value)
+
+        old_index_lst = self.math_operator_worker.get_condition_set(condition_id_lst=condition_id_lst,
+                                                                    values_lst=old_values_lst)
+
+        new_index_lst = self.math_operator_worker.get_condition_set(condition_id_lst=condition_id_lst,
+                                                                    values_lst=new_values_lst)
+
+        old_id_condition_set = old_index_lst[0][0]
+        new_id_condition_set = new_index_lst[0][0]
+
+        id_research = int(self.__labels['номер_опыта'])
+
+        result_id_lst, new_result_value_lst = [int], [float]
+        for result in self.__results:
+            result_name = self.layout.parentWidget().findChild(QLabel, result[0]).text()
+            new_result_value = self.layout.parentWidget().findChild(QDoubleSpinBox, f'{result[0]}_spinbox').value()
+
+            if new_result_value is not None:
+                new_result_value = float(new_result_value)
+            new_result_value_lst.append(new_result_value)
+
+            result_id = self.math_operator_worker.get_result_id_by_result_name(result_name)[0][0]
+            result_id_lst.append(result_id)
+
+        id_values_dict = dict(zip(result_id_lst, new_result_value_lst))
+
+        self.math_operator_worker.edit_research(id_values_dict=id_values_dict, new_condition_set=new_id_condition_set,
+                                                id_raw_material=id_material, old_id_condition_set=old_id_condition_set,
+                                                id_research=id_research)
+        QMessageBox.information(self, 'Изменение', 'Данный опыта изменены')
+        self.close()
 
 
 if __name__ == "__main__":

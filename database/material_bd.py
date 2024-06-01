@@ -86,7 +86,7 @@ class MaterialDataBaseWorker:
 
     def insert_condition_set(self, condition_id_lst: list[int] = None, values_lst: list[float] = None) -> None:
 
-        query = "INSERT INTO condition_in_set(id_condition_set, id_condition, value) VALUES\n" \
+        query = "INSERT INTO condition_in_set(id_condition_set, id_condition, value) VALUES\n"
 
         size = len(condition_id_lst)
 
@@ -285,6 +285,17 @@ class MaterialDataBaseWorker:
                          "SELECT id_property\n"
                          "FROM property\n"
                          "WHERE name = (?))", (new_value, material_name, property_name))
+        self.conn.commit()
+
+    def edit_research(self, id_values_dict: dict[int, float], new_condition_set: int, id_raw_material: int,
+                      old_id_condition_set: int, id_research: int) -> None:
+        for id_result, new_value in id_values_dict.items():
+            self.cur.execute("UPDATE research\n"
+                             "SET value = (?), id_condition_set = (?)\n"
+                             "WHERE id_result = (?) AND id_raw_material = (?) AND\n"
+                             "id_condition_set = (?) AND id_research = (?);",
+                             (new_value, new_condition_set, id_result, id_raw_material, old_id_condition_set,
+                              id_research))
         self.conn.commit()
 
     def edit_type(self, curr_type_name: str, new_type_name: str) -> None:

@@ -83,6 +83,7 @@ class ResearchWidget(QWidget):
 
     def __edit_button_clicked(self):
         row = self.table.currentRow()
+        research_number = int(self.table.item(row, 0).text())
         labels = []
         values = []
         for c in range(self.table.columnCount()):
@@ -90,11 +91,9 @@ class ResearchWidget(QWidget):
             values.append(self.table.item(row, c).text())
             labels.append(str(c + 1) if it is None else it.text())
 
-        values = values[1:]
         labels = list(map(lambda x: x.split(':')[0], labels))
-        labels = labels[1:]
         result = dict(zip(labels, values))
-        self.edit_research_window = EditResearchWindow(result, 0)
+        self.edit_research_window = EditResearchWindow(result, research_number)
         self.edit_research_window.show()
 
     def __delete_button_clicked(self):
