@@ -226,6 +226,10 @@ class MaterialDataBaseWorker:
         self.cur.execute("DELETE FROM property WHERE name = (?)", (name,))
         self.conn.commit()
 
+    def delete_research(self, research_number: int):
+        self.cur.execute("DELETE FROM research WHERE id_research = (?)", (research_number,))
+        self.conn.commit()
+
     def delete_condition(self, name):
         self.cur.execute("DELETE FROM condition WHERE name = (?)", (name,))
         self.conn.commit()

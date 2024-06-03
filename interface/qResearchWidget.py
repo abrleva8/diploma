@@ -1,6 +1,6 @@
 import pandas as pd
 from PyQt6.QtWidgets import QWidget, QTableWidget, QAbstractItemView, QHeaderView, QTableWidgetItem, \
-    QHBoxLayout, QVBoxLayout, QPushButton, QLayout
+    QHBoxLayout, QVBoxLayout, QPushButton, QLayout, QMessageBox
 
 from database.material_bd import MaterialDataBaseWorker
 from interface.qAddWindows.qAddResearchWindow import AddResearchWindow
@@ -34,16 +34,19 @@ class ResearchWidget(QWidget):
         layout = QVBoxLayout()
 
         add_research_btn = QPushButton('Добавить эксперимент')
-        edit_research_btn = QPushButton('Редактировать эксперимент')
-        delete_research_btn = QPushButton('Удалить эксперимент')
+        self.edit_research_btn = QPushButton('Редактировать эксперимент')
+        self.delete_research_btn = QPushButton('Удалить эксперимент')
+
+        self.edit_research_btn.setEnabled(False)
+        self.delete_research_btn.setEnabled(False)
 
         add_research_btn.clicked.connect(self.__add_button_clicked)
-        edit_research_btn.clicked.connect(self.__edit_button_clicked)
-        delete_research_btn.clicked.connect(self.__delete_button_clicked)
+        self.edit_research_btn.clicked.connect(self.__edit_button_clicked)
+        self.delete_research_btn.clicked.connect(self.__delete_button_clicked)
 
         layout.addWidget(add_research_btn)
-        layout.addWidget(edit_research_btn)
-        layout.addWidget(delete_research_btn)
+        layout.addWidget(self.edit_research_btn)
+        layout.addWidget(self.delete_research_btn)
 
         return layout
 
@@ -52,7 +55,7 @@ class ResearchWidget(QWidget):
         self.table = QTableWidget()
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
-
+        self.table.selectionModel().selectionChanged.connect(self.__selection_changed)
         layout.addWidget(self.table)
 
         return layout
@@ -78,14 +81,14 @@ class ResearchWidget(QWidget):
                 self.table.setItem(i, j, QTableWidgetItem(str(val)))
 
     def __add_button_clicked(self):
-        self.edit_research_window = AddResearchWindow()
-        self.edit_research_window.show()
+        self.add_research_window = AddResearchWindow()
+        self.add_research_window.show()
 
     def __edit_button_clicked(self):
         row = self.table.currentRow()
         research_number = int(self.table.item(row, 0).text())
-        labels = []
-        values = []
+        labels, values = [], []
+
         for c in range(self.table.columnCount()):
             it = self.table.horizontalHeaderItem(c)
             values.append(self.table.item(row, c).text())
@@ -97,4 +100,15 @@ class ResearchWidget(QWidget):
         self.edit_research_window.show()
 
     def __delete_button_clicked(self):
-        pass
+        row = self.table.currentRow()
+        research_number = int(self.table.item(row, 0).text())
+
+        self.math_operator_worker.delete_research(research_number)
+
+        QMessageBox.information(self, 'Успех', f'Эксперимент {research_number} успешно удален')
+
+    def __selection_changed(self):
+        is_enabled = len(self.table.selectedItems()) > 0
+
+        self.edit_research_btn.setEnabled(is_enabled)
+        self.delete_research_btn.setEnabled(is_enabled)
