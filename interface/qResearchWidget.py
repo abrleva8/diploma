@@ -52,10 +52,12 @@ class ResearchWidget(QWidget):
 
     def __table_layout(self) -> QLayout:
         layout = QVBoxLayout()
+
         self.table = QTableWidget()
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         self.table.selectionModel().selectionChanged.connect(self.__selection_changed)
+
         layout.addWidget(self.table)
 
         return layout

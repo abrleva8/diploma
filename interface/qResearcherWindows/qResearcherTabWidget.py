@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QPushButton
 from interface.qResearcherWindows.qDataWidget import DataTabWidget
 from interface.qResearcherWindows.qMathModelResultWidget import MathModelResultWidget
 from interface.qResearcherWindows.qMathModelWidget import MathModelWidget, dataframe_generation_from_table
+from interface.qResearcherWindows.qPredictTabWidget import PredictTabWidget
 from math_model.data_frame_manager import DataFrameManager
 
 
@@ -18,11 +19,13 @@ class ResearcherTabWidget(QWidget):
         self.data_tab = DataTabWidget()
         self.math_model_tab = MathModelWidget(self.df_manager)
         self.math_model_result = MathModelResultWidget()
+        self.predict_tab = PredictTabWidget()
 
         # Add tabs
         self.tabs.addTab(self.data_tab, "Выбор данных")
         self.tabs.addTab(self.math_model_tab, "Математическая модель")
         self.tabs.addTab(self.math_model_result, "Результаты")
+        self.tabs.addTab(self.predict_tab, "Предсказание")
 
         # Connect events
         self.child_confirm_data_btn = self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data')
@@ -58,6 +61,7 @@ class ResearcherTabWidget(QWidget):
                                                self.math_model_tab.model_info.fisher_table)
         self.math_model_result.set_determinate_info(self.math_model_tab.model_info.r2)
         self.math_model_result.set_mse(self.math_model_tab.model_info.mse)
+        self.predict_tab.set_columns(self.math_model_tab.pipeline[0].transformers[0][1].column_names.to_list())
 
     def __save_model(self):
         self.math_model_result.save_model(self.math_model_tab.saver)
@@ -65,7 +69,9 @@ class ResearcherTabWidget(QWidget):
     def __load_model(self):
         model_loader = self.math_model_result.load_model(self.math_model_tab.saver)
         # self.math_model_tab.set_model_loader(model_loader)
+        print(model_loader.pipeline[0].transformers[0][1].column_names.to_list())
         self.math_model_tab.model_info = model_loader.model_info
+        self.math_model_tab.pipeline = model_loader.pipeline
 
         self.__apply_result()
 

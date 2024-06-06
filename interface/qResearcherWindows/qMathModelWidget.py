@@ -40,7 +40,6 @@ def dataframe_generation_from_table(table, columns: list[str] = None) -> pd.Data
 
 
 class MathModelWidget(QWidget):
-    # saver_sgn = pyqtSignal(ModelLoader, name='saver_sgn')
 
     def __init__(self, df_manager: DataFrameManager):
         super(QWidget, self).__init__()
@@ -53,9 +52,7 @@ class MathModelWidget(QWidget):
         self.setLayout(self.layout)
 
         self.saver = ModelLoader()
-
-    # def set_model_loader(self, loader: ModelLoader):
-    #     self.saver = loader
+        self.pipeline = None
 
     def set_table_widget(self, table: QTableWidget):
         num_rows = table.rowCount()
@@ -214,21 +211,21 @@ class MathModelWidget(QWidget):
             ]
         )
         # Assuming 'model' is your machine learning model (e.g., RandomForestClassifier)
-        pipeline = Pipeline(steps=[('preprocessor', preprocessor),
+        self.pipeline = Pipeline(steps=[('preprocessor', preprocessor),
                                    ('model', lr)])
 
         y = self.df_manager.get_y()
         self.result = pg.linear_regression(new_X, y)
 
         # TODO: create a class for the next code lines
-        pipeline.fit(self.df_manager.X(), y)
+        self.pipeline.fit(self.df_manager.X(), y)
 
-        y_pred = pipeline.predict(self.df_manager.df[self.df_manager.get_columns()])
+        y_pred = self.pipeline.predict(self.df_manager.df[self.df_manager.get_columns()])
 
         pearson_corr = stats.pearsonr(y, y_pred)
         corr = pearson_corr.statistic
 
-        f1 = len(pipeline[1].coef_)
+        f1 = len(self.pipeline[1].coef_)
         f2 = len(y) - f1 - 1
 
         dfn = min(f1, f2)
@@ -236,12 +233,12 @@ class MathModelWidget(QWidget):
 
         self.fisher = corr ** 2 / (1 - corr ** 2) * (dfn / dfd)
         self.fisher_table = stats.f.ppf(q=0.95, dfn=dfn, dfd=dfd)
-        self.r2 = pipeline.score(self.df_manager.df[self.df_manager.get_columns()], y)
+        self.r2 = self.pipeline.score(self.df_manager.df[self.df_manager.get_columns()], y)
         self.mse = mean_squared_error(y, y_pred)
 
         self.model_info = ModelInfo(self.result, self.fisher, self.fisher_table, self.r2, self.mse)
 
-        self.saver = ModelLoader(pipeline, self.model_info)
+        self.saver = ModelLoader(self.pipeline, self.model_info)
 
 
 if __name__ == "__main__":

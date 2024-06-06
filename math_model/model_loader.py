@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import pandas as pd
 import joblib
-
 from sklearn.pipeline import Pipeline
 
 from data_classes.model_info import ModelInfo
@@ -23,3 +21,6 @@ class ModelLoader:
         assert isinstance(model_loader, ModelLoader)
 
         return model_loader
+
+    def get_columns(self) -> list[str]:
+        return self.pipeline[0].transformers[0][1].column_names.to_list()
