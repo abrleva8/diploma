@@ -212,7 +212,7 @@ class MathModelWidget(QWidget):
         )
         # Assuming 'model' is your machine learning model (e.g., RandomForestClassifier)
         self.pipeline = Pipeline(steps=[('preprocessor', preprocessor),
-                                   ('model', lr)])
+                                        ('model', lr)])
 
         y = self.df_manager.get_y()
         self.result = pg.linear_regression(new_X, y)

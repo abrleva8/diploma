@@ -10,6 +10,10 @@ from math_model.data_frame_manager import DataFrameManager
 class ResearcherTabWidget(QWidget):
     def __init__(self, parent):
         super(QWidget, self).__init__(parent)
+        self.child_predict_model_btn = None
+        self.child_save_model_btn = None
+        self.child_load_model_btn = None
+        self.child_confirm_data_btn = None
         self.layout = QVBoxLayout(self)
 
         self.df_manager: DataFrameManager = None
@@ -28,21 +32,26 @@ class ResearcherTabWidget(QWidget):
         self.tabs.addTab(self.predict_tab, "Предсказание")
 
         # Connect events
-        self.child_confirm_data_btn = self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data')
-        self.child_confirm_data_btn.clicked.connect(self.__apply_dataset)
-
-        self.child_load_model_btn = self.math_model_result.parentWidget().findChild(QPushButton, 'load_model_btn')
-        self.child_load_model_btn.clicked.connect(self.__load_model)
-
-        self.child_save_model_btn = self.math_model_result.parentWidget().findChild(QPushButton, 'save_model_btn')
-        self.child_save_model_btn.clicked.connect(self.__save_model)
-
-        self.math_model_tab.apply_text_btn.clicked.connect(self.__apply_result)
+        self.make_connects()
 
         # Add tabs to widget
         self.layout.addWidget(self.tabs)
 
         self.setLayout(self.layout)
+
+    def make_connects(self):
+        self.child_confirm_data_btn = self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data')
+        self.child_confirm_data_btn.clicked.connect(self.__apply_dataset)
+        self.child_load_model_btn = self.math_model_result.parentWidget().findChild(QPushButton, 'load_model_btn')
+        self.child_load_model_btn.clicked.connect(self.__load_model)
+        self.child_save_model_btn = self.math_model_result.parentWidget().findChild(QPushButton, 'save_model_btn')
+        self.child_save_model_btn.clicked.connect(self.__save_model)
+        self.child_predict_model_btn = self.predict_tab.parentWidget().findChild(QPushButton, 'predict_btn')
+
+        if self.child_predict_model_btn is not None:
+            self.child_predict_model_btn.clicked.connect(self.__predict_result)
+
+        self.math_model_tab.apply_text_btn.clicked.connect(self.__apply_result)
 
     def __apply_dataset(self):
         self.math_model_tab.set_table_widget(self.data_tab.table)
@@ -62,18 +71,23 @@ class ResearcherTabWidget(QWidget):
         self.math_model_result.set_determinate_info(self.math_model_tab.model_info.r2)
         self.math_model_result.set_mse(self.math_model_tab.model_info.mse)
         self.predict_tab.set_columns(self.math_model_tab.pipeline[0].transformers[0][1].column_names.to_list())
+        self.make_connects()
 
     def __save_model(self):
         self.math_model_result.save_model(self.math_model_tab.saver)
 
     def __load_model(self):
         model_loader = self.math_model_result.load_model(self.math_model_tab.saver)
-        # self.math_model_tab.set_model_loader(model_loader)
         print(model_loader.pipeline[0].transformers[0][1].column_names.to_list())
         self.math_model_tab.model_info = model_loader.model_info
         self.math_model_tab.pipeline = model_loader.pipeline
 
         self.__apply_result()
+
+    def __predict_result(self):
+        df = self.predict_tab.create_df_for_predict()
+        res = self.math_model_tab.pipeline.predict(df)
+        print(res)
 
 
 if __name__ == "__main__":
