@@ -44,13 +44,13 @@ class DataTabWidget(QWidget):
         self.result_cmb = QComboBox(self)
         data_from_base_btn = QPushButton('Загрузить из базы')
         data_from_file_btn = QPushButton('Загрузить из файла')
+        # data_from_base_btn.receivers()
         confirm_data_btn = QPushButton('Подтвердить выбор данных')
         confirm_data_btn.setObjectName('confirm_data')
         confirm_data_btn.setEnabled(False)
 
         data_from_base_btn.clicked.connect(self.__get_full_dataset)
         data_from_file_btn.clicked.connect(self.__open_file_dialog)
-        confirm_data_btn.clicked.connect(self.__confirm_data)
 
         filter_layout.addRow(raw_type_lbl, self.type_cmb)
         filter_layout.addRow(result_lbl, self.result_cmb)
@@ -106,9 +106,6 @@ class DataTabWidget(QWidget):
                 self.table.setItem(i, j, QTableWidgetItem(str(val)))
 
         self.layout.parentWidget().findChild(QPushButton, 'confirm_data').setEnabled(True)
-
-    def __confirm_data(self):
-        pass
 
     def __init_result_cmb(self) -> None:
         results = self.math_operator_worker.get_results()

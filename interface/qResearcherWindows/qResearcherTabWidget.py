@@ -1,3 +1,4 @@
+from PyQt6.QtCore import QObject, QMetaObject, pyqtSlot
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QPushButton
 
 from interface.qResearcherWindows.qDataWidget import DataTabWidget
@@ -32,6 +33,9 @@ class ResearcherTabWidget(QWidget):
         self.tabs.addTab(self.predict_tab, "Предсказание")
 
         # Connect events
+        # TODO: понять как избавиться от лишних связей
+        self.child_confirm_data_btn = self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data')
+        self.child_confirm_data_btn.clicked.connect(self.__apply_dataset)
         self.make_connects()
 
         # Add tabs to widget
@@ -40,13 +44,12 @@ class ResearcherTabWidget(QWidget):
         self.setLayout(self.layout)
 
     def make_connects(self):
-        self.child_confirm_data_btn = self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data')
-        self.child_confirm_data_btn.clicked.connect(self.__apply_dataset)
         self.child_load_model_btn = self.math_model_result.parentWidget().findChild(QPushButton, 'load_model_btn')
-        self.child_load_model_btn.clicked.connect(self.__load_model)
         self.child_save_model_btn = self.math_model_result.parentWidget().findChild(QPushButton, 'save_model_btn')
-        self.child_save_model_btn.clicked.connect(self.__save_model)
         self.child_predict_model_btn = self.predict_tab.parentWidget().findChild(QPushButton, 'predict_btn')
+
+        self.child_load_model_btn.clicked.connect(self.__load_model)
+        self.child_save_model_btn.clicked.connect(self.__save_model)
 
         if self.child_predict_model_btn is not None:
             self.child_predict_model_btn.clicked.connect(self.__predict_result)
@@ -61,8 +64,10 @@ class ResearcherTabWidget(QWidget):
         self.df_manager = DataFrameManager(dataframe_generation_from_table(self.data_tab.table,
                                                                            header_labels))
         self.math_model_tab.df_manager = self.df_manager
+
         self.math_model_tab.save_df_btn.setEnabled(True)
         self.data_tab.layout.parentWidget().findChild(QPushButton, 'confirm_data').setEnabled(False)
+        print(1)
 
     def __apply_result(self):
         self.math_model_result.set_table_widget(self.math_model_tab.model_info.pingouin_result)
