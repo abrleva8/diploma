@@ -236,7 +236,8 @@ class MathModelWidget(QWidget):
         self.r2 = self.pipeline.score(self.df_manager.df[self.df_manager.get_columns()], y)
         self.mse = mean_squared_error(y, y_pred)
 
-        self.model_info = ModelInfo(self.result, self.fisher, self.fisher_table, self.r2, self.mse)
+        predict_feature = self.df_manager.get_predict_feature()
+        self.model_info = ModelInfo(self.result, self.fisher, self.fisher_table, self.r2, self.mse, predict_feature)
 
         self.saver = ModelLoader(self.pipeline, self.model_info)
 

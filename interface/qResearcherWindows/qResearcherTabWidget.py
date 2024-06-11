@@ -1,5 +1,4 @@
-from PyQt6.QtCore import QObject, QMetaObject, pyqtSlot
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QPushButton
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QPushButton, QLabel
 
 from interface.qResearcherWindows.qDataWidget import DataTabWidget
 from interface.qResearcherWindows.qMathModelResultWidget import MathModelResultWidget
@@ -17,7 +16,7 @@ class ResearcherTabWidget(QWidget):
         self.child_confirm_data_btn = None
         self.layout = QVBoxLayout(self)
 
-        self.df_manager: DataFrameManager = None
+        self.df_manager: DataFrameManager | None = None
 
         # Initialize tab screen
         self.tabs = QTabWidget()
@@ -33,8 +32,6 @@ class ResearcherTabWidget(QWidget):
         self.tabs.addTab(self.predict_tab, "Предсказание")
 
         # Connect events
-        # TODO: понять как избавиться от лишних связей
-        #
         self.make_connects()
 
         # Add tabs to widget
@@ -81,7 +78,8 @@ class ResearcherTabWidget(QWidget):
                                                self.math_model_tab.model_info.fisher_table)
         self.math_model_result.set_determinate_info(self.math_model_tab.model_info.r2)
         self.math_model_result.set_mse(self.math_model_tab.model_info.mse)
-        self.predict_tab.set_columns(self.math_model_tab.pipeline[0].transformers[0][1].column_names.to_list())
+        self.predict_tab.set_columns(self.math_model_tab.pipeline[0].transformers[0][1].column_names.to_list(),
+                                     self.math_model_tab.model_info.predict_feature)
         self.make_connects()
 
     def __save_model(self):
@@ -98,7 +96,8 @@ class ResearcherTabWidget(QWidget):
     def __predict_result(self):
         df = self.predict_tab.create_df_for_predict()
         res = self.math_model_tab.pipeline.predict(df)
-        print(res)
+        self.predict_feature_value = self.findChild(QLabel, 'predict_value_lbl')
+        self.predict_feature_value.setText(str(round(res[0], 2)))
 
 
 if __name__ == "__main__":

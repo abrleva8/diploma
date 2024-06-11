@@ -10,3 +10,4 @@ class ModelInfo:
     fisher_table: pd.DataFrame
     r2: float
     mse: float
+    predict_feature: str | None = None

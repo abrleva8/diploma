@@ -12,6 +12,9 @@ class DataFrameManager:
     def get_columns(self):
         return self.df.columns[2:-1]
 
+    def get_predict_feature(self) -> str:
+        return self.df.columns[-1]
+
     def X(self):
         return self.df[self.df.columns[2:-1]]
 
@@ -61,7 +64,7 @@ class DataFrameManager:
         return df_result
 
     @staticmethod
-    def get_research_df(df):
+    def get_research_df(df) -> pd.DataFrame:
         df_conditions = DataFrameManager.get_conditions(df)
         df_result = DataFrameManager.get_results(df)
 
