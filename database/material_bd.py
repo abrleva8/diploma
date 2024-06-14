@@ -4,8 +4,8 @@ import sqlite3
 
 class MaterialDataBaseWorker:
     def __init__(self):
-        # path = os.path.join(os.getcwd(), 'data', 'materials_tab.db')
-        path = r'C:\Users\Ilia\PycharmProjects\diploma\data\materials.db'
+        path = os.path.join(os.getcwd(), 'data', 'materials.db')
+        # path = r'C:\Users\Ilia\PycharmProjects\diploma\data\materials.db'
         self.conn = sqlite3.connect(path)
         self.cur = self.conn.cursor()
 
