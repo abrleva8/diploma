@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
-from PyQt6.QtWidgets import QWidget, QTableWidget, QHeaderView, QAbstractItemView, QHBoxLayout, QLayout, QLabel, \
-    QFormLayout, QDoubleSpinBox, QPushButton
+from PyQt6.QtWidgets import QWidget, QLayout, QLabel, QFormLayout, QDoubleSpinBox, QPushButton
 
 
 class PredictTabWidget(QWidget):

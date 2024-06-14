@@ -29,7 +29,7 @@ class ResearcherTabWidget(QWidget):
         self.tabs.addTab(self.data_tab, "Выбор данных")
         self.tabs.addTab(self.math_model_tab, "Математическая модель")
         self.tabs.addTab(self.math_model_result, "Результаты")
-        self.tabs.addTab(self.predict_tab, "Предсказание")
+        self.tabs.addTab(self.predict_tab, "Прогнозирование")
 
         # Connect events
         self.make_connects()

@@ -19,6 +19,8 @@ class NormalAnalystWindow(QAppWindow):
     def __init__(self, df: pd.DataFrame):
         super().__init__()
 
+        self.setWindowTitle("Разведочный анализ данных")
+
         self.df = df
 
         self.mdiArea = QMdiArea()
