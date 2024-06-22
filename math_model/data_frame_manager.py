@@ -1,5 +1,7 @@
 import pandas as pd
 
+from sklearn.preprocessing import StandardScaler
+
 
 class DataFrameManager:
     def __init__(self, df: pd.DataFrame):
@@ -73,3 +75,7 @@ class DataFrameManager:
         df_total.drop(columns_to_delete, axis=1, inplace=True)
         df_total = df_total.drop_duplicates()
         return df_total
+
+    def scaler(self):
+        scaler = StandardScaler()
+        return scaler.fit_transform(self.df[self.df.columns[2:-1]])

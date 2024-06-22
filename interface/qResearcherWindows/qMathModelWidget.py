@@ -1,12 +1,13 @@
 import pandas as pd
 import pingouin as pg
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QAbstractItemView, QHeaderView, QHBoxLayout, \
-    QPushButton, QGridLayout, QLabel, QRadioButton, QLineEdit, QButtonGroup, QFileDialog, QMessageBox
+    QPushButton, QGridLayout, QLabel, QRadioButton, QLineEdit, QButtonGroup, QFileDialog, QMessageBox, QCheckBox
 from scipy import stats
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 from data_classes.model_info import ModelInfo
 from interface.qNormalAnalystWindow import NormalAnalystWindow
@@ -116,6 +117,8 @@ class MathModelWidget(QWidget):
         self.quad_rb = QRadioButton('Квадратичная')
         self.user_rb = QRadioButton('Пользовательская')
 
+        self.scaler_cbox = QCheckBox('Нормализация')
+
         self.linear_rb.setEnabled(False)
         self.quad_rb.setEnabled(False)
         self.user_rb.setEnabled(False)
@@ -139,11 +142,12 @@ class MathModelWidget(QWidget):
         analysis_layout.addWidget(settings_btn, 1, 0)
         analysis_layout.addWidget(self.exploratory_btn, 2, 0)
         analysis_layout.addWidget(model_lbl, 3, 0)
-        analysis_layout.addWidget(self.linear_rb, 4, 0)
-        analysis_layout.addWidget(self.quad_rb, 5, 0)
-        analysis_layout.addWidget(self.user_rb, 6, 0)
-        analysis_layout.addWidget(self.result_txt_ed, 7, 0)
-        analysis_layout.addWidget(self.apply_text_btn, 8, 0)
+        analysis_layout.addWidget(self.scaler_cbox, 4, 0)
+        analysis_layout.addWidget(self.linear_rb, 5, 0)
+        analysis_layout.addWidget(self.quad_rb, 6, 0)
+        analysis_layout.addWidget(self.user_rb, 7, 0)
+        analysis_layout.addWidget(self.result_txt_ed, 8, 0)
+        analysis_layout.addWidget(self.apply_text_btn, 9, 0)
 
         layout.addLayout(table_layout)
         layout.addLayout(analysis_layout)
@@ -200,6 +204,10 @@ class MathModelWidget(QWidget):
     def __apply_btn_clicked(self) -> None:
         text = self.result_txt_ed.text()
         new_X = get_new_x(self.df_manager.df, text)
+        if self.scaler_cbox.isChecked():
+            scaler_new_X = StandardScaler().fit_transform(new_X)
+        else:
+            scaler_new_X = new_X
 
         custom_transformer = CustomTransformer(column_names=self.df_manager.get_columns(), text=text)
 
@@ -211,11 +219,16 @@ class MathModelWidget(QWidget):
             ]
         )
         # Assuming 'model' is your machine learning model (e.g., RandomForestClassifier)
-        self.pipeline = Pipeline(steps=[('preprocessor', preprocessor),
-                                        ('model', lr)])
+        if self.scaler_cbox.isChecked():
+            self.pipeline = Pipeline(steps=[('preprocessor', preprocessor),
+                                            ('scaler', StandardScaler()),
+                                            ('model', lr)])
+        else:
+            self.pipeline = Pipeline(steps=[('preprocessor', preprocessor),
+                                            ('model', lr)])
 
         y = self.df_manager.get_y()
-        self.result = pg.linear_regression(new_X, y)
+        self.result = pg.linear_regression(scaler_new_X, y)
 
         # TODO: create a class for the next code lines
         self.pipeline.fit(self.df_manager.X(), y)
@@ -225,7 +238,7 @@ class MathModelWidget(QWidget):
         pearson_corr = stats.pearsonr(y, y_pred)
         corr = pearson_corr.statistic
 
-        f1 = len(self.pipeline[1].coef_)
+        f1 = len(self.pipeline[-1].coef_)
         f2 = len(y) - f1 - 1
 
         dfn = min(f1, f2)
