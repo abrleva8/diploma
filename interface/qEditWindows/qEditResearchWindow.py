@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import QLayout, QGridLayout, QWidget, QLabel, QComboBox, QDoubleSpinBox, QPushButton, QMessageBox
+from typing import List
 
 from database.material_bd import MaterialDataBaseWorker
 from interface.qAppWindows.qAppWindow import QAppWindow
@@ -138,7 +139,9 @@ class EditResearchWindow(QAppWindow):
 
         id_research = int(self.__labels['номер_опыта'])
 
-        result_id_lst, new_result_value_lst = [int], [float]
+        result_id_lst: list[int] = []
+        new_result_value_lst: list[float] = []
+
         for result in self.__results:
             result_name = self.layout.parentWidget().findChild(QLabel, result[0]).text()
             new_result_value = self.layout.parentWidget().findChild(QDoubleSpinBox, f'{result[0]}_spinbox').value()
@@ -155,7 +158,7 @@ class EditResearchWindow(QAppWindow):
         self.math_operator_worker.edit_research(id_values_dict=id_values_dict, new_condition_set=new_id_condition_set,
                                                 id_raw_material=id_material, old_id_condition_set=old_id_condition_set,
                                                 id_research=id_research)
-        QMessageBox.information(self, 'Изменение', 'Данный опыта изменены')
+        QMessageBox.information(self, 'Изменение', 'Данные эксперимента изменены')
         self.close()
 
 

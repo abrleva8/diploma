@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QLayout, QGridLayout, QWidget, QLabel, QComboBox, QDoubleSpinBox, QPushButton
+from PyQt6.QtWidgets import QLayout, QGridLayout, QWidget, QLabel, QComboBox, QDoubleSpinBox, QPushButton, QMessageBox
 
 from database.material_bd import MaterialDataBaseWorker
 from interface.qAppWindows.qAppWindow import QAppWindow
@@ -96,7 +96,8 @@ class AddResearchWindow(QAppWindow):
             layout.addWidget(unit_lbl, index + start_index, 2)
 
     def __add_button_clicked(self):
-        id_material = self.math_operator_worker.get_id_material_by_material_name(self.raw_material_cmbox.currentText())[0][0]
+        id_material = \
+        self.math_operator_worker.get_id_material_by_material_name(self.raw_material_cmbox.currentText())[0][0]
         print(f'{id_material=}')
 
         condition_id_lst, values_lst = [], []
@@ -110,7 +111,8 @@ class AddResearchWindow(QAppWindow):
             condition_id_lst.append(condition_id)
             values_lst.append(condition_value)
 
-        index_lst = self.math_operator_worker.get_condition_set(condition_id_lst=condition_id_lst, values_lst=values_lst)
+        index_lst = self.math_operator_worker.get_condition_set(condition_id_lst=condition_id_lst,
+                                                                values_lst=values_lst)
 
         if len(index_lst) > 0:
             print('Есть совпадения')
@@ -135,6 +137,8 @@ class AddResearchWindow(QAppWindow):
 
             self.math_operator_worker.insert_research(result_id, id_material,
                                                       id_condition_set, id_research, result_value)
+
+            QMessageBox.information(self, "Успех", "Эксперимент добавлен")
 
 
 if __name__ == "__main__":
