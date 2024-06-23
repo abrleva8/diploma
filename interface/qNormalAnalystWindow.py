@@ -32,7 +32,7 @@ class NormalAnalystWindow(QAppWindow):
         self._ax_2 = self._canvas_2.figure.subplots()
 
         X = df.iloc[:, 2:-1]
-        df.to_csv("fragment.csv", sep=",", index=False)
+        # df.to_csv("fragment.csv", sep=",", index=False)
         y = df[df.columns[-1]]
 
         if y.shape[0] == 0:
@@ -41,7 +41,13 @@ class NormalAnalystWindow(QAppWindow):
         mu, std = norm.fit(y)
         shapiro_result = shapiro(y)
 
-        is_normal = shapiro_result.pvalue > 0.05
+        try:
+            with open('confidence.txt', 'r') as f:
+                confidence_value = float(f.readline())
+        except:
+            confidence_value = 0.05
+
+        is_normal = shapiro_result.pvalue > confidence_value
         self.is_normal_signal.emit(is_normal)
 
         n, bins, patches = self._ax_1.hist(

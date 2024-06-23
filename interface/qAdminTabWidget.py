@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget
 from database import material_bd
 from interface.qMaterialWidget import MaterialWidget
 from interface.qResearchWidget import ResearchWidget
+from interface.qStatisticWidget import StatisticWidget
 from interface.qUserWidget import UserWidget
 
 
@@ -16,6 +17,7 @@ class AdminWidgets(QWidget):
         self.user_tab = UserWidget()
         self.materials_tab = MaterialWidget()
         self.research_tab = ResearchWidget()
+        self.statistic_tab = StatisticWidget()
 
         self.tabs.tabBarClicked.connect(self.__material_tab_clicked)
 
@@ -23,6 +25,7 @@ class AdminWidgets(QWidget):
         self.tabs.addTab(self.user_tab, "Пользователи")
         self.tabs.addTab(self.materials_tab, "Материалы")
         self.tabs.addTab(self.research_tab, "Эксперименты")
+        self.tabs.addTab(self.statistic_tab, "Статистика")
 
         # Add tabs to widget
         self.layout.addWidget(self.tabs)
